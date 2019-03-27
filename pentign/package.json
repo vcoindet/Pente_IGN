@@ -1,0 +1,18 @@
+{
+  "name": "template",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "main": "src/js/server.js",
+  "scripts": {
+    "start": "node ./src/js/server.js",
+    "test": "mocha --recursive './test/mocha/**/*.js'",
+    "lint": "eslint -c eslint.json ./src/",
+    "jsdoc": "jsdoc -c jsdoc.json"
+  },
+  "dependencies": {
+    "express": "4.16.4",
+    "log4js": "3.0.6",
+    "nconf": "0.10.0"
+  }
+}

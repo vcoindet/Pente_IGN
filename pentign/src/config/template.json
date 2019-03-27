@@ -1,0 +1,10 @@
+{
+  "application": {
+    "name": "",
+    "title": "",
+    "description": "",
+    "logs": {
+      "configuration": "../config/log4js.json"
+    }
+  }
+}

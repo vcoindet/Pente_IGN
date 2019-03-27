@@ -1,0 +1,30 @@
+openapi: "3.0.0"
+info:
+  description: "Description de l'API du service web."
+  version: "0.0.1"
+  title: "Service web"
+  contact:
+    email: ""
+servers:
+  - url: "https://localhost"
+    description: "Serveur de test local"
+tags:
+- name: "Découverte"
+  description: "Découvrir le service et les ressources disponibles"
+- name: "Utilisation"
+  description: "Utiliser le service"
+- name: "Administration"
+  description: "Administrer le service"
+paths:
+  /getcapabilities:
+    get:
+      tags:
+      - "Découverte"
+      summary: "Découvrir le service"
+      description: "Découvrir le service: les opérations possibles, les ressources disponibles et les options proposées."
+      operationId: "getcapabilities"
+      responses:
+        200:
+          description: "successful operation"
+        404:
+          description: "Not found"

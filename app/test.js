@@ -4,6 +4,8 @@ var app = express();
 var myRouter = express.Router();
 var url_mnt = "https://..."
 
+var fs = require('fs');
+const GeoTIFF = require('geotiff');
 
 myRouter.route('/')
 
@@ -118,6 +120,28 @@ app.get("/ligne/:my_json",function (req,res){
 
 })
 
+app.get("/fichier",function(req,res){
+    // res.sendfile("C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif");
+    var url = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17";
+    // GeoTIFF.fromURL(url);
+    
+
+//     GeoTIFF.fromUrl(url)
+//   .then(tiff => {
+    // const response =  fetch(url);
+    // const arrayBuffer =  response.arrayBuffer();
+    // const tiff =  GeoTIFF.fromArrayBuffer(arrayBuffer);
+    // const image =  tiff.getImage();
+
+    // const width = image.getWidth();
+    // const height = image.getHeight();
+    // const tileWidth = image.getTileWidth();
+    // const tileHeight = image.getTileHeight();
+    // const samplesPerPixel = image.getSamplesPerPixel();
+    // console.log(width);
+// });
+    res.send("<p>" + " Hello " + "</p>");
+})
 
 .listen(8080,function(){
     console.log('Listening on port 8080')

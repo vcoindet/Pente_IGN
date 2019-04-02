@@ -1,4 +1,4 @@
-//let mat_tmp = [[10,20,25],[22,5,25],[20,24,18]];
+let mat_tmp = [[10,20,25],[22,5,25],[20,24,18]];
 
 function algo_horn(mat, taille_pixel){
 	let A = mat[0][0]; //i + 1, j - 1
@@ -25,6 +25,6 @@ function algo_horn(mat, taille_pixel){
 	return [pente, orientation];
 }
 
-//let a = algo_horn(mat_tmp, 10);
+let a = algo_horn(mat_tmp, 10);
 
-//console.log(a);
+console.log(a);

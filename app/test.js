@@ -5,7 +5,8 @@ var myRouter = express.Router();
 var url_mnt = "https://..."
 
 var fs = require('fs');
-const GeoTIFF = require('geotiff');
+var GeoTIFF = require('geotiff');
+
 
 myRouter.route('/')
 
@@ -120,9 +121,101 @@ app.get("/ligne/:my_json",function (req,res){
 
 })
 
+
+
 app.get("/fichier",function(req,res){
-    // res.sendfile("C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif");
-    var url = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17";
+    url = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
+
+    (async function() {
+        //lecture image raster à partir d'un URL
+        const tiff = await GeoTIFF.fromFile(url);
+
+        //obtention des attribut raster
+
+        const image = await tiff.getImage();
+        //metadonnees
+        // console.log(image.getWidth());
+        // console.log(image);
+        // ...
+        // const width = image.getWidth();
+        // const height = image.getHeight();
+        // const tileWidth = image.getTileWidth();
+        // const tileHeight = image.getTileHeight();
+        // const samplesPerPixel = image.getSamplesPerPixel();
+
+        // ne marche pas : Error: the image does not have an affine transformation
+        // const origin = image.getOrigin();
+        // const resolution = image.getResolution();
+        // const bbox = image.getBoundingBox();
+
+        // image lue en entier
+        // const data = await image.readRasters();
+        // const { width, height } = data;
+        // lecture d'une image rgb
+        // const [red, green, blue] = await image.readRasters();
+        // lecture des bandes d'une image
+        // const [r0, g0, b0, r1, g1, b1, ...] = await image.readRasters({ interleave: true });
+
+
+        // lecture d'une image dans une fenêtre limité par les coordonnées image
+        // au dela des bords : utiliser fillValue: value
+        // const data2 = await image.readRasters({ window: [2048, 0, 4096, 4096] });
+        // lecture d'un echantillon
+        // const [red] = await image.readRasters({ samples: [0] });
+        // console.log(red)
+        
+        //extraction d'une image 40 x 40 
+        const data = await image.readRasters({ width: 40, height: 40});
+
+        //lecture du pixel coord x = 0 , y = 19
+        var x = 0
+        var y = 18
+
+        console.log(data[0][y + 40 * x + 1])
+
+        //lecture du pixel coord x = 1 , y = 19
+        x = 1
+        y = 18
+
+        console.log(data[0][y + 40 * x + 1])
+
+
+      })()
+    
+    // res.send(tiff);
+    // fs.readFile(url, function(err, data) {
+        // if (err) throw err; // Fail if the file can't be read.
+        // res.send('<html><body><img src="data:image/tiff;base64,');
+        // const tiff = GeoTIFF.fromFile(url);
+        // const image = tiff.getImage();
+        // const width = image.getWidth();
+
+        
+        // var width;
+        // (async function() {
+        //     const tiff = await GeoTIFF.fromFile(url);
+        //     const image = await tiff.getImage();
+        //     width = image.getWidth();
+            
+            // const arrayBuffer = await response.arrayBuffer();
+            // const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+            // const tiff = await GeoTIFF.;
+        // })()
+
+        
+        
+
+    // })
+
+    // res.send("Hello");
+
+
+    // (async function() {
+        
+        // const arrayBuffer = await response.arrayBuffer();
+        // const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+        // const tiff = await GeoTIFF.filesystem(url);
+    // })()
     // GeoTIFF.fromURL(url);
     
 
@@ -139,8 +232,9 @@ app.get("/fichier",function(req,res){
     // const tileHeight = image.getTileHeight();
     // const samplesPerPixel = image.getSamplesPerPixel();
     // console.log(width);
-// });
-    res.send("<p>" + " Hello " + "</p>");
+
+
+    // });
 })
 
 .listen(8080,function(){

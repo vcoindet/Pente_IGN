@@ -124,11 +124,11 @@ app.get("/ligne/:my_json",function (req,res){
 
 
 app.get("/fichier",function(req,res){
-    url = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
+    var imagePath = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
 
-    (async function() {
+    (async function(i,j, imagePath) {
         //lecture image raster à partir d'un URL
-        const tiff = await GeoTIFF.fromFile(url);
+        const tiff = await GeoTIFF.fromFile(imagePath);
 
         //obtention des attribut raster
 
@@ -165,7 +165,7 @@ app.get("/fichier",function(req,res){
         // console.log(red)
         
         //extraction d'une image 40 x 40 
-        const data = await image.readRasters({ width: 40, height: 40});
+        const data = await image.readRasters({ width: 256, height: 256});
 
         //lecture du pixel coord x = 0 , y = 19
         var x = 0
@@ -178,6 +178,16 @@ app.get("/fichier",function(req,res){
         y = 18
 
         console.log(data[0][y + 40 * x + 1])
+        console.log(data[0])
+
+        var value_test =  data[0][y + 40 * x + 1]
+
+        res.json({
+            result:value_test,
+            method:req.method
+
+        })
+
 
 
       })()

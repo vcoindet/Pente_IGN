@@ -5,6 +5,9 @@ const nconf = require('nconf');
 const path = require('path');
 const fs = require('fs');
 const pm = require('./utils/processManager.js');
+const express = require('express');
+const penteModule = require('./penteModule/penteModule.js');
+// const apiStructure = require('apiStructure.js')
 
 var LOGGER;
 
@@ -30,6 +33,28 @@ function start() {
   // Instanciation du logger et sauvegarde de sa configuration
   let logConfiguration = getLoggerConfiguration(configuration);
   initLogger(logConfiguration);
+
+  // const api = apiStructure();
+
+
+  const app = express();
+
+  app.get('/', function (req, res) {
+    let x = req.query.x;
+    let y = req.query.y;
+    let pente = penteModule.computeSlope(x,y);
+    let orient = penteModule.computeAspect(x,y);
+    res.json({
+      "pente":pente,
+      "orientation":orient
+    });
+  });
+  
+  app.listen(8080, function () {
+    console.log('Example app listening on port 8080!');
+  });
+
+
 
 }
 

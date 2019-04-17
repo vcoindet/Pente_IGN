@@ -17,7 +17,7 @@ module.exports = {
   */
 
  
-  Lambert_to_pm : function(latitude,longitude) {
+  PM_to_Lambert : function(latitude,longitude) {
     
     LOGGER.info("Conversion des coordonnées latitude/longitude en Lambert 93")
 
@@ -68,4 +68,46 @@ module.exports = {
 
   }; 
 
+  module.exports = {
 
+    /**
+    *
+    * @function
+    * @name Conversion_Lambert_to_lat
+    * @description Fonction utilisée pour convertir des coordonnées Lambert 93 en Latitude/Longitude
+    * @param {integer} error - Signal de retour du process
+    *
+    */
+  
+   
+    Lambert_to_pm : function(x,y) {
+      
+      LOGGER.info("Conversion des coordonnées Lambert 93 en WGS84 (latitude/longitude)")
+      
+        let b8 = 1 / 298.257222101;
+        let b10 = Math.sqrt(2 * b8 - b8 * b8);
+        let b16 = 0.7256077650532670;
+        x = x- 700000;
+        y = y-  12655612.0499;
+        let gamma = Math.atan(-x / y);
+      let latiso = Math.log(11754255.426096 / Math.sqrt((x * x) + (y * y))) / b16;
+      let sinphiit = Math.tanh(latiso + b10 * Math.atanh(b10 * Math.sin(1)));
+    
+      for (i = 0; i != 6 ; i++) {
+        sinphiit = Math.tanh(latiso + b10 * Math.atanh(b10 * sinphiit));
+        }
+        
+        let longitude = (gamma / b16 + 3 / 180 * Math.PI) / Math.PI * 180;
+        let latitude = Math.asin(sinphiit) / Math.PI * 180;
+        let response = {
+          longitude, latitude
+      };
+  
+  
+      return response ;
+    
+    
+    
+    }
+
+  }

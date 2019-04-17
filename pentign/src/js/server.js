@@ -44,8 +44,8 @@ function start() {
   app.get('/', function (req, res) {
     let x = req.query.x;
     let y = req.query.y;
-    let pente = penteModule.computeSlope(x,y);
-    let orient = penteModule.computeAspect(x,y);
+    let pente = penteModule.Horn_algo(mat,taille_pixel);// données en entrées à modifier
+    let orient = penteModule.Zar_algo(image); // données en entrées à modifier
     res.json({
       "pente":pente,
       "orientation":orient

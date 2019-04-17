@@ -13,7 +13,14 @@ app.get('/', function (req, res) {
     "orientation":orient
   });
 });
+app.get('/conversion', function (req, res) {
+  let latitude = req.query.latitude;
+  let longitude = req.query.longitude;
+  let result = conversion.Lambert_to_pm(latitude,longitude);
+  res.json(result);
+    
 
+});
 app.listen(8080, function () {
     console.log('Example app listening on port 8080!');
   });

@@ -11,7 +11,9 @@
     "jsdoc": "jsdoc -c jsdoc.json"
   },
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "express": "4.16.4",
+    "geotiff": "^1.0.0-beta.6",
     "log4js": "3.0.6",
     "nconf": "0.10.0"
   }

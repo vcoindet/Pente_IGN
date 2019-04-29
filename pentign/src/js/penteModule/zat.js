@@ -1,5 +1,10 @@
 
-function zar_algoritm(image){
+// function zat_algoritm(x,y,z,image){
+
+// }
+
+
+function zat_algoritm(image){
     var i = 1
     var j = 1
 
@@ -18,12 +23,12 @@ function zar_algoritm(image){
     //     aspect += 360; 
     // }
 
-    console.log(g);
-    console.log(h);
-    console.log(slope);
+    // console.log(g);
+    // console.log(h);
+    // console.log(slope);
 
-    console.log("angle de la pente : " + slope_angle);
-    console.log("orientation par rapport à l'axe x : " + aspect);
+    // console.log("angle de la pente : " + slope_angle);
+    // console.log("orientation par rapport à l'axe x : " + aspect);
 }
 
 var image = {
@@ -34,7 +39,7 @@ var image = {
     ]
 };
 
-zar_algoritm(image);
+zat_algoritm(image);
 
 var image2 = {
     "image":[
@@ -44,4 +49,4 @@ var image2 = {
     ]
 }
 
-zar_algoritm(image2);
+zat_algoritm(image2);

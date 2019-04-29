@@ -1,4 +1,5 @@
 'use strict';
+const zevenbergenAndThorneAlgo = require('./zat.js');
 
 module.exports = {
 
@@ -16,16 +17,20 @@ module.exports = {
   *
   */
 
-  computeSlope: function(x, y) {
+  zevenbergenAndThorneSlopeComputing: function(x, y) {
+    return {'valeur':1,'orientation':2};
+  },
 
+  hornSlopeComputing : function(x,y){
+    return {'valeur':1,'orientation':2};
+  },
+
+  computeSlope : function(x,y){
     return 1;
-
   },
 
   computeAspect : function(x,y){
-      return 2;
-  }
-
-
+    return 2;
+  },
 
 }

@@ -1,0 +1,22 @@
+<canvas id="plot"></canvas>
+<script>
+  // ...
+
+  (async function() {
+    const tiff = await GeoTIFF.fromUrl(url);
+    const image = await tiff.getImage();
+    const data = await image.readRasters();
+
+    const canvas = document.getElementById("plot");
+    const plot = new plotty.plot({
+      canvas,
+      data: data[0],
+      width: image.getWidth(),
+      height: image.getHeight(),
+      domain: [0, 256],
+      colorScale: "viridis"
+    });
+    plot.render();
+  })();
+</script>
+<script src="test.js"></script>

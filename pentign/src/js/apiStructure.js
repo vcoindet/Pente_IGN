@@ -127,7 +127,8 @@ app.get('/', function (req, res) {
     "orientation":orient
   });
 });
-app.get('/conversion', function (req, res) {
+//Conversion Pseudo Mercator en Lambert 93
+app.get('/conversion/pm2l93', function (req, res) {
   let latitude = req.query.latitude;
   let longitude = req.query.longitude;
   let result = conversion.PM_to_Lambert(latitude,longitude);
@@ -135,7 +136,8 @@ app.get('/conversion', function (req, res) {
     
 
 });
-app.get('/conversion', function (req, res) {
+// Conversion Lambert 93 en Pseudo Mercator 
+app.get('/conversion/l932pm', function (req, res) {
   let x = req.query.x;
   let y = req.query.y;
   let result2 = conversion.Lambert_to_pm(x,y);

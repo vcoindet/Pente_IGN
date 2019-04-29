@@ -37,25 +37,138 @@
 var niveau = 8;
 
 var resolution = 1;
-var X0 = -0.5; //coord
-var Y0 = 12000000.5;
+var X0 = -0.5;//Abscisse du coin supérieur gauche, origine du quadrillage
+var Y0 = 12000000.5;//Ordonnée du coin supérieur gauche, origine du quadrillage
 var TileW = 256; //taille de la tuile
 var TileH = 256;
 var MatrixW = 4000; //nombre de pixel en largeur
 var MatrixH = 23000; // nombre de pixel largeur
-var imageWidth = 16; //nb de tuile dans la hauteur de la dalle
-var imageHeight = 16;
+var tilesPerWidth = 16; //nb de tuile dans la hauteur de la dalle
+var tilesPerHeight = 16;
 var pathDepth = 2; //profondeur arborescence
 
+ /**
+  *
+  * @function
+  * @name searchIndiceCoord
+  * @description Renvoie les indices de dalle
+  * correspondant au coord en entrée
+  * @param {int} x - coord en lambert 93
+  * @param {int} Y - coord en lambert 93
+  * @return {lst[int]} indice - coord haut gauche de la dalle en lambert93
+  *
+  */
+function searchIndiceCoord(x, y){
+	let realW = resolution * TileW;//largeur reelle d'une tuile
+	let realH = resolution * TileH;//hauteur reelle d'une tuile
 
-function coordDalle(X, Y){
-	let colonne = ((X - X0) / (imageWidth * TileW * resolution));
-	let ligne = ((Y0 - Y) / (imageHeight *TileH * resolution));
+	let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
+	let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
+	
+	console.log(Ituile);
+	console.log(Jtuile);
+	
+	let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
+	let J_dalle = Math.floor(Jtuile / tilesPerHeight);//indice J de la dalle
 
-	return [parseInt(colonne), parseInt(ligne)];
+	console.log(I_dalle);
+	console.log(J_dalle); 
+
+	let Xtuile = Ituile * realW;//coord du hg de la tuile concernée hg = haut gauche
+	let Ytuile = Y0 - (Jtuile * realH);//coord du hg de la tuile concernée hg = haut gauche
+
+	//X gauche
+	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
+	let X_phase_hg = I_tms_hg * resolution;//coordonnée du pixel à gauche concerné
+	
+	//X droite
+	let I_tms_hd = Math.ceil((x - X0)) / resolution;//indice du pixel sur l'ensemble
+	let X_phase_hd = I_tms_hd * resolution;//coordonnée du pixel à droite concerné
+	
+	//Y haut
+	let J_tms_hg = Math.floor((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
+	let Y_phase_hg = J_tms_hg * resolution;//coordonnée du pixel en haut concerné
+
+	//Y bas
+	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
+	let Y_phase_bg = J_tms_bg * resolution;//coordonnée du pixel en bas concerné
+
+	let X_phase_final = -99999;
+	let Y_phase_final = -99999;
+	let I_phase_final = -99999;
+	let J_phase_final = -99999;
+
+	if(Math.abs(X_phase_hd - x) < Math.abs(x - X_phase_hg)){
+		X_phase_final = X_phase_hd;//coord X le plus proche
+		I_phase_final = I_tms_hd;
+	}
+	else{
+		X_phase_final = X_phase_hg;//coord X le plus proche
+		I_phase_final = I_tms_hg;
+	}
+	
+	if(Math.abs(Y_phase_hg - y) < Math.abs(y - Y_phase_bg)){
+		Y_phase_final = Y_phase_hg;//coord Y le plus proche
+		J_phase_final = J_tms_hg;
+	}
+	else{
+		Y_phase_final = Y_phase_bg;//coord Y le plus proche
+		J_phase_final = J_tms_bg;
+	}
+	
+	/*
+	console.log(X_phase_final);
+	console.log(Y_phase_final);
+	*/
+
+	let I_phase = I_phase_final % TileW;//indice I du pixel dans la tuile
+	let J_phase = J_phase_final % TileH;//indice J du pixel dans la tuile
+	
+	/*
+	console.log("##########");
+	console.log(X_phase_final);
+	console.log(Y_phase_final);
+	console.log(I_phase);
+	console.log(J_phase);
+	console.log(I_dalle);
+	console.log(J_dalle);
+	console.log(I_phase_final);
+	console.log(J_phase_final);
+	console.log("##########");
+	*/
+	
+	return [I_dalle, J_dalle];
 }
 
+ /**
+  *
+  * @function
+  * @name indiceTuile
+  * @description Renvoie indice de tuile 
+  * en fonction d'indice de dalle
+  * @param {int} X - abscisse du coin supérieur gauche de la dalle
+  * @param {int} Y - ordonnee du coin supérieur gauche de la dalle
+  * @return {lst[int]} indice - indice de la tuile
+  *
+  */
+function indiceDalle(X, Y){
+	let colonne = ((X - X0) / (tilesPerWidth * TileW * resolution));
+	let ligne = ((Y0 - Y) / (tilesPerHeight * TileH * resolution));
+	
+	let indice = [parseInt(colonne), parseInt(ligne)];
+	return indice;
+}
 
+/**
+  *
+  * @function
+  * @name convert36
+  * @description Renvoie indice de tuile en base 36 de taille 3 minimum
+  * @param {int} X - indice de tuile
+  * @param {int} Y - indice de la tuile
+  * @return {lst[string]} indice - indice de la tuile en base 36
+  *
+  */
 function convert36(X, Y){
 	X = X.toString(36);
 	Y = Y.toString(36);
@@ -83,29 +196,64 @@ function convert36(X, Y){
 			X = "0" + X;
 		}
 	}
-	return [X, Y];
+	
+	let indice36 = [X, Y];
+	return indice36;
 }
 
-function createParse(coord, level, format){
-	let X = coord[0];
-	let Y = coord[1];
+/**
+  *
+  * @function
+  * @name createParse
+  * @description Renvoie chemin de la dalle de tuile
+  * @param {string} X - indice de tuile en base 36
+  * @param {string} Y - indice de la tuile en base 36
+  * @return {string} chemin - chemin du tif de la tuile
+  *
+  */
+function createParse(X, Y, level, format){
 	let chemin = "PYRAMIDE" + "/" + "IMAGE" + "/" + level + "/" + X[X.length - 3] + Y[Y.length - 3] + "/" + X[X.length - 2] + Y[Y.length - 2] + "/" + X[X.length - 1] + Y[Y.length - 1] + "." + format;
 
 	return chemin
 }
 
-// C3L3C2L2 / C1L1 / C0L0.tif
 
-var X = coordDalle(667902.49, 6848097.42)[0];
-var Y = coordDalle(667902.49, 6848097.42)[1];
 
-console.log(X);
-console.log(Y);
+function coordToindice(x, y, niveau, type){
+	//recherche de la dalle ou sont les coords
+	let res = searchIndiceCoord(x, y);
 
-console.log(X.toString(36));
-console.log(Y.toString(36));
+	let Xdalle = res[0];
+	let Ydalle = res[1];
 
-console.log(convert36(X, Y));
+	//console.log(Xdalle);
+	//console.log(Ydalle);
 
-console.log(createParse(convert36(X,Y), "8", "tif"));
+	//
+	let resTuile = indiceDalle(Xdalle, Ydalle);
+
+	let Xtuile = 230;//Xdalle;//resTuile[0]
+	let Ytuile = 1350;//Ydalle;//resTuile[1]
+	
+	console.log(Xtuile);
+	console.log(Ytuile);
+
+	let resConvert = convert36(Xtuile, Ytuile);
+	
+	Xtuile = resConvert[0];
+	Ytuile = resConvert[1];
+	
+	console.log(Xtuile);
+	console.log(Ytuile);
+	
+	let chemin = createParse(Xtuile, Ytuile, niveau, type);
+	
+	return chemin;
+}
+
+var Xparis = 652085.268879;
+var Yparis = 6862292.446089;
+//223 247 max min de X
+//1327 1512 max min de Y
+console.log(coordToindice(Xparis, Yparis, "8", "tif"));
 

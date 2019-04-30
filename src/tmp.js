@@ -12,7 +12,7 @@
 */
 
 /*
-<level>
+<level>-104.984703
         <tileMatrix>8</tileMatrix>
         <baseDir>creation/IMAGE/8</baseDir>
         <mask>
@@ -41,7 +41,7 @@ var X0 = -0.5;//Abscisse du coin supérieur gauche, origine du quadrillage
 var Y0 = 12000000.5;//Ordonnée du coin supérieur gauche, origine du quadrillage
 var TileW = 256; //taille de la tuile
 var TileH = 256;
-var MatrixW = 4000; //nombre de pixel en largeur
+var MatrixW = 4000; //nombre de pixel en longeur
 var MatrixH = 23000; // nombre de pixel largeur
 var tilesPerWidth = 16; //nb de tuile dans la hauteur de la dalle
 var tilesPerHeight = 16;
@@ -56,7 +56,6 @@ var pathDepth = 2; //profondeur arborescence
   * @param {int} x - coord en lambert 93
   * @param {int} Y - coord en lambert 93
   * @return {lst[int]} indice - coord haut gauche de la dalle en lambert93
-  *
   */
 function searchIndiceCoord(x, y){
 	let realW = resolution * TileW;//largeur reelle d'une tuile
@@ -197,7 +196,8 @@ function convert36(X, Y){
 		}
 	}
 	
-	let indice36 = [X, Y];
+	let indice36 = [X, Y];//TileOffsets
+	
 	return indice36;
 }
 
@@ -232,8 +232,8 @@ function coordToindice(x, y, niveau, type){
 	//
 	let resTuile = indiceDalle(Xdalle, Ydalle);
 
-	let Xtuile = 230;//Xdalle;//resTuile[0]
-	let Ytuile = 1350;//Ydalle;//resTuile[1]
+	let Xtuile = Xdalle;//resTuile[0]
+	let Ytuile = Ydalle;//resTuile[1]
 	
 	console.log(Xtuile);
 	console.log(Ytuile);
@@ -251,8 +251,8 @@ function coordToindice(x, y, niveau, type){
 	return chemin;
 }
 
-var Xparis = 652085.268879;
-var Yparis = 6862292.446089;
+var Xparis = 914068.76;
+var Yparis = 6457774.34;
 //223 247 max min de X
 //1327 1512 max min de Y
 console.log(coordToindice(Xparis, Yparis, "8", "tif"));

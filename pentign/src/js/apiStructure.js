@@ -20,15 +20,46 @@ module.exports = {
 
         const app = express();
         
-        app.get('/test', function (req, res) {
+        app.get('/polyligne', function (req, res) {
             let x = req.query.x;
             let y = req.query.y;
+            let listepoint = req.query.listepoint;
+            let nb_point = req.query.nb_point;
+            let typecoord = req.query.typecoord;
+            //let lst_x = [];
+            //let lst_y = [];
+            
+            let lst_pente = [];
+            let lst_orien = [];
+            
+            //reconstruit la liste de point
+            if(listepoint.length > nb_point){
+				let point_pas = listepoint / nb_point;//on prend un point tout les x point_pas
+				let new_list_point = [];
+				for(let j = 0; j < listepoint; j + point_pas){
+					new_list_point.push(listepoint[j]);
+				}
+				listepoint = new_list_point;
+			}
+			
+            for(let i = 0; i < listepoint.length; i++){
+				//lst_x.push(listepoint[i][0]);
+				//lst_y.push(listepoint[i][1]);
+				lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
+				lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
+			}
+
             let pente = penteModule.computeSlope(x,y);
             let orient = penteModule.computeAspect(x,y);
-            res.json({
-              "pente":pente,
-              "orientation":orient
+            for (let i = 0, i < nb_point, i++){
+				 res[i].json({
+              "lat" = x[i];
+              "long" = y[i]; 
+              "alti"= 
+              
             });
+			}
+           
           })
 
         .get('/',function(req,res){

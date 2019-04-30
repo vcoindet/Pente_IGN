@@ -140,7 +140,6 @@ function searchIndiceCoord(x, y){
 }
 
  /**
-  *
   * @function
   * @name indiceTuile
   * @description Renvoie indice de tuile 
@@ -148,7 +147,6 @@ function searchIndiceCoord(x, y){
   * @param {int} X - abscisse du coin supérieur gauche de la dalle
   * @param {int} Y - ordonnee du coin supérieur gauche de la dalle
   * @return {lst[int]} indice - indice de la tuile
-  *
   */
 function indiceDalle(X, Y){
 	let colonne = ((X - X0) / (tilesPerWidth * TileW * resolution));
@@ -159,14 +157,12 @@ function indiceDalle(X, Y){
 }
 
 /**
-  *
   * @function
   * @name convert36
   * @description Renvoie indice de tuile en base 36 de taille 3 minimum
   * @param {int} X - indice de tuile
   * @param {int} Y - indice de la tuile
   * @return {lst[string]} indice - indice de la tuile en base 36
-  *
   */
 function convert36(X, Y){
 	X = X.toString(36);
@@ -202,14 +198,12 @@ function convert36(X, Y){
 }
 
 /**
-  *
   * @function
   * @name createParse
   * @description Renvoie chemin de la dalle de tuile
   * @param {string} X - indice de tuile en base 36
   * @param {string} Y - indice de la tuile en base 36
   * @return {string} chemin - chemin du tif de la tuile
-  *
   */
 function createParse(X, Y, level, format){
 	let chemin = "PYRAMIDE" + "/" + "IMAGE" + "/" + level + "/" + X[X.length - 3] + Y[Y.length - 3] + "/" + X[X.length - 2] + Y[Y.length - 2] + "/" + X[X.length - 1] + Y[Y.length - 1] + "." + format;
@@ -217,8 +211,16 @@ function createParse(X, Y, level, format){
 	return chemin
 }
 
-
-
+/**
+  * @function
+  * @name coordToindice
+  * @description Renvoie l'image tiff correspond au coordonee
+  * @param {int} x - latitude en lambert 93
+  * @param {int} y - longitude en lambert 94
+  * @param {string} niveau - niveau de de la pyramide du mnt
+  * @param {string} type - type du fichier chercher (png, tif...)
+  * @return {string} chemin - chemin du tif de la tuile
+  */
 function coordToindice(x, y, niveau, type){
 	//recherche de la dalle ou sont les coords
 	let res = searchIndiceCoord(x, y);

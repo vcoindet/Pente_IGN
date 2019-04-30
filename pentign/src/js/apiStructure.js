@@ -19,6 +19,7 @@ module.exports = {
 
         const app = express();
         
+<<<<<<< HEAD
         app.get('/polyligne', function (req, res) {
             let x = req.query.x;
             let y = req.query.y;
@@ -61,6 +62,9 @@ module.exports = {
            
           })
 
+=======
+        
+>>>>>>> a15bed5ccda6766bf21be7201481c59ac415f9c3
         .get('/',function(req,res){
             res.json({
                 message : "Bienvenue dans l'application PentIGN, Complêtez l'url pour accéder aux fonctionnalités",
@@ -134,6 +138,7 @@ module.exports = {
 
             })()
         })
+<<<<<<< HEAD
 
         .get('/surface',function(req,res){
           res.json({
@@ -143,6 +148,62 @@ module.exports = {
             "projection":"proj"
           })
         })
+=======
+        
+        app.get('/polyligne', function (req, res) {
+            let x = req.query.x;
+            let y = req.query.y;
+            let listepoint = req.query.listepoint;
+            let nb_point = req.query.nb_point;
+            let typecoord = req.query.typecoord;
+            //let lst_x = [];
+            //let lst_y = [];
+            
+            let lst_pente = [];
+            let lst_orien = [];
+            let lst_pente_trie;
+			let min_pente;
+			let max_pente;
+			let moy_pente;
+            let somme_pente;
+            
+            //reconstruit la liste de point
+            if(listepoint.length > nb_point){
+				let point_pas = Math.floor(listepoint / nb_point);//on prend un point tout les x point_pas
+				let new_list_point = [];
+				for(let j = 0; j < listepoint; j + point_pas){
+					new_list_point.push(listepoint[j]);
+				}
+				listepoint = new_list_point;
+			}
+			
+			//calcule pour chaque point la pente et l'orientation
+            for(let i = 0; i < listepoint.length; i++){
+				lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
+				lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
+			}
+			
+			lst_pente_trie = lst_pente.sort();
+			
+			min_pente = lst_pente_trie[0];
+			max_pente = lst_pente_trie[lst_pente_trie.length - 1];
+			
+			somme_pente = lst_pente.reduce((a,b)=> a + b, 0); //additionne toute les valeurs du tableau
+			moy_pente = somme_pente / lst_pente.length;
+            
+            for (let i = 0; i < nb_point; i++){
+				res[i].json({
+					"lat utilisateur": x[i],
+					"long utilisateur": y[i], 
+					"alti": 0,
+					"pente": lst_pente[i],
+					"orientation": lst_orien[i],
+					"lat reel": 0,
+					"long reel": 0
+				});
+			}
+          })
+>>>>>>> a15bed5ccda6766bf21be7201481c59ac415f9c3
           
         .listen(8080, function () {
             console.log('Listening on port 8080!');

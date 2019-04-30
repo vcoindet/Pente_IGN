@@ -30,10 +30,15 @@ module.exports = {
             
             let lst_pente = [];
             let lst_orien = [];
+            let lst_pente_trie;
+			let min_pente;
+			let max_pente;
+			let moy_pente;
+            let somme_pente;
             
             //reconstruit la liste de point
             if(listepoint.length > nb_point){
-				let point_pas = listepoint / nb_point;//on prend un point tout les x point_pas
+				let point_pas = Math.floor(listepoint / nb_point);//on prend un point tout les x point_pas
 				let new_list_point = [];
 				for(let j = 0; j < listepoint; j + point_pas){
 					new_list_point.push(listepoint[j]);
@@ -41,22 +46,28 @@ module.exports = {
 				listepoint = new_list_point;
 			}
 			
+			//calcule pour chaque point la pente et l'orientation
             for(let i = 0; i < listepoint.length; i++){
-				//lst_x.push(listepoint[i][0]);
-				//lst_y.push(listepoint[i][1]);
 				lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
 				lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
 			}
-
-            let pente = penteModule.computeSlope(x,y);
-            let orient = penteModule.computeAspect(x,y);
-            for (let i = 0, i < nb_point, i++){
-				 res[i].json({
-              "lat" = x[i];
-              "long" = y[i]; 
-              "alti"= 
-              
-            });
+			
+			lst_pente_trie = lst_pente.sort();
+			
+			min_pente = lst_pente_trie[0];
+			max_pente = lst_pente_trie[lst_pente_trie.length - 1];
+			
+			somme_pente = lst_pente.reduce((a,b)=> a + b, 0); //additionne toute les valeurs du tableau
+			moy_pente = somme_pente / lst_pente.length;
+            
+            for (let i = 0; i < nb_point; i++){
+				res[i].json({
+					"lat utilisateur" = x[i];
+					"long utilisateur" = y[i]; 
+					"alti" = 0;
+					"pente" = lst_pente[i];
+					"orientation" = lst_orien[i];
+				});
 			}
            
           })

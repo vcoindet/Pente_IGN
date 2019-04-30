@@ -28,7 +28,7 @@ module.exports = {
     let I = mat[2][2]; //i - 1, j + 1
   
     let E_W = ((C + (2 * F) + I) - (A + (2 * D) + G)) / (8 * taille_pixel);
-    let N_S = ((C + (2 * B) + A) - (I+ (2 * H) + G)) / (8 * taille_pixel);
+    let N_S = ((C + (2 * B) + A) - (I + (2 * H) + G)) / (8 * taille_pixel);
     
     console.log(E_W);
     console.log(N_S);

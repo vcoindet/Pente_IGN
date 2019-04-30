@@ -9,36 +9,61 @@ const app = express();
 var GeoTIFF = require('geotiff');
 
 (async function(i,j){
-        // var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
-        let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
 
-
-        var i = 1;
-        var j = 2;
-
-        var fd = fs.openSync(imagePath,"r");
+//buffer de 4 octets
         var buffer = new Buffer.alloc(4);
 
-        var N = i + j * 16;
-        var position = 2048 + 4 * N;
-        var position2 = 2048 + 4 * 256 + 4 * N;
-        fs.readSync(fd,buffer,0,4,position);
+        /** 
+         * @param imagePath : répertoire de l'image tif
+         * @param fd : lecture du fichier tiff
+         * 
+         * @param N : nombre de tuiles dans un fichier tif
+         * @param initTileOffset : adresse de début des valeurs du fichier tif
+         * @param iniTileByteCounts : adresse de début des valeurs de taille
+         * @param initTile : adresse de début des tuiles
+         * 
+        */
+
+        var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
+        var fd = fs.openSync(imagePath,"r");
+
+        var N = 16;
+        var initTileOffset = 2048;
+        var iniTileByteCounts = initTileOffset * 4 * N;
+        var initTile = initTileOffset + 2 * 4 * N;//utile ?
+        
+        //ex lire 2 eme tuile
+        var addTuile2 = initTileOffset + buffer.readInt32LE(0) + 4;
+        var taille = iniTileByteCounts + buffer.readInt32LE(0) + 4;
+        var tuile = initTile + buffer.readInt32LE(0) + 4;
+        
+        //on obtient l'adresse de la tuile 2
+        fs.readSync(fd,buffer,0,4,addTuile2);
         var pos_tuile = buffer.readInt32LE(0);
-
-        console.log("position = " + buffer.readInt32LE(0));
-        var taille_tuile = buffer.readInt32LE(0)
-        fs.readSync(fd,buffer,0,4,position2);
-        console.log("taille = " + buffer.readInt32LE(0));
-
+        console.log("adresse de la tuile : " + pos_tuile);
+        //adresse de la tuile : 92736
+        
+        //on obtient la taille de la tuile 2
+        fs.readSync(fd,buffer,0,4,taille);
+        var taille_tuile = buffer.readInt32LE(0);
+        console.log("taille de la tuile : " + taille_tuile);
+        //taille de la tuile : 1651107247
+        
+        //nouveau buffer qui prend en compte la taille de la tuile
         var buffer_2 = new Buffer.alloc(taille_tuile);
+        
+        //récupération de la tuile à partir des résultat obtenus précédement
         fs.readSync(fd,buffer_2,0,taille_tuile,pos_tuile);
         var tuile = buffer_2.readInt32LE(0);
-        console.log("tuile = " + tuile);
-        fs.writeFileSync("Bureau",buffer_2);
+        console.log("tuile : " + tuile);
+        //tuile : -576938888
         
+        //écriture du fichier tif de la tuile obtenue
+        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer_2)
         
-        const tiff = await GeoTIFF.fromArrayBuffer(buffer_2);
-        console.log(tiff);
+        // lecture d'une tuile avec geotiff.js 
+        // const tiff = await GeoTIFF.fromArrayBuffer(buffer_2);
+        // console.log(tiff);
     })()
 
 

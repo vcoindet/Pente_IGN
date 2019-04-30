@@ -50,13 +50,13 @@ module.exports = {
 
             let pente = penteModule.computeSlope(x,y);
             let orient = penteModule.computeAspect(x,y);
-            for (let i = 0, i < nb_point, i++){
-				 res[i].json({
-              "lat" = x[i];
-              "long" = y[i]; 
-              "alti"= 
-              
-            });
+            for (let i = 0; i < nb_point; i++){
+            res[i].json({
+                  "lat" : x[i],
+                  "long" : y[i],
+                  "alti": ""
+                  
+                });
 			}
            
           })
@@ -134,6 +134,15 @@ module.exports = {
 
             })()
         })
+
+        .get('/surface',function(req,res){
+          res.json({
+            "listepoint":"listepoint",
+            "algo":"algo",
+            "unité":"unit",
+            "projection":"proj"
+          })
+        })
           
         .listen(8080, function () {
             console.log('Listening on port 8080!');
@@ -144,7 +153,6 @@ module.exports = {
 
 }
 
-<<<<<<< HEAD
 // let app = express();
 // const conversion = require ('./conversion/Convert_Lambert_Modul.js');
 
@@ -171,36 +179,6 @@ module.exports = {
 //   let y = req.query.y;
 //   let result2 = conversion.Lambert_to_pm(x,y);
 //   res.json(result2); 
-=======
-=======
-const conversion = require ('./conversion/Convert_Lambert_Modul.js');
-
-app.get('/', function (req, res) {
-  let x = req.query.x;
-  let y = req.query.y;
-  let pente = penteModule.Horn_algo(mat,taille_pixel);// données en entrées à modifier
-  let orient = penteModule.Zar_algo(image); // données en entrées à modifier
-  res.json({
-    "pente":pente,
-    "orientation":orient
-  });
-});
-//Conversion Pseudo Mercator en Lambert 93
-app.get('/conversion/pm2l93', function (req, res) {
-  let latitude = req.query.latitude;
-  let longitude = req.query.longitude;
-  let result = conversion.PM_to_Lambert(latitude,longitude);
-  res.json(result); 
-    
-
-});
-// Conversion Lambert 93 en Pseudo Mercator 
-app.get('/conversion/l932pm', function (req, res) {
-  let x = req.query.x;
-  let y = req.query.y;
-  let result2 = conversion.Lambert_to_pm(x,y);
-  res.json(result2); 
->>>>>>> f5773e7c5913aff791a54f49eaaca5ad74fb87aa
     
 
 // });

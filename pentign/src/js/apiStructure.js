@@ -137,13 +137,13 @@ module.exports = {
             
             for (let i = 0; i < nb_point; i++){
 				res[i].json({
-					"lat utilisateur" = x[i];
-					"long utilisateur" = y[i]; 
-					"alti" = 0;
-					"pente" = lst_pente[i];
-					"orientation" = lst_orien[i];
-					"lat reel" = 0;
-					"long reel" = 0;
+					"lat utilisateur": x[i],
+					"long utilisateur": y[i], 
+					"alti": 0,
+					"pente": lst_pente[i],
+					"orientation": lst_orien[i],
+					"lat reel": 0,
+					"long reel": 0
 				});
 			}
           })

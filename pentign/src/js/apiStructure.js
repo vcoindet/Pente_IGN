@@ -18,12 +18,35 @@ module.exports = {
     launch : function(){
 
         const app = express();
+        ////// liste de points obtenues par un JSON
+        app.get("/polyligne/:my_json",function (req,res){
+
+            var geometrie = JSON.parse(req.params.my_json);
+            var properties = {
+                "algoritme" : req.query.algo,
+                "unite" : req.query.unit,
+                "projection" : req.query.proj
+            };
+            console.log(geometrie);
         
-<<<<<<< HEAD
+            res.json({
+                message : "On génère un json avec les paramètres de la lineString",
+                geometrie,
+                properties,
+                method:req.method
+            });
+        
+        })
+
+        /////
+
         app.get('/polyligne', function (req, res) {
-            let x = req.query.x;
-            let y = req.query.y;
+            //query
+            let x = parseFloat(req.query.x);
+            let y = parseFloat(req.query.y);
+
             let listepoint = req.query.listepoint;
+            // let listepoint = req.params.liste;
             let nb_point = req.query.nb_point;
             let typecoord = req.query.typecoord;
             //let lst_x = [];
@@ -32,7 +55,8 @@ module.exports = {
             let lst_pente = [];
             let lst_orien = [];
             
-            //reconstruit la liste de point
+            //erreur
+            // reconstruit la liste de point
             if(listepoint.length > nb_point){
 				let point_pas = listepoint / nb_point;//on prend un point tout les x point_pas
 				let new_list_point = [];
@@ -55,16 +79,14 @@ module.exports = {
             res[i].json({
                   "lat" : x[i],
                   "long" : y[i],
-                  "alti": ""
+                  "alti": "",
+                  "geometrie":listepoint
                   
                 });
 			}
            
           })
 
-=======
-        
->>>>>>> a15bed5ccda6766bf21be7201481c59ac415f9c3
         .get('/',function(req,res){
             res.json({
                 message : "Bienvenue dans l'application PentIGN, Complêtez l'url pour accéder aux fonctionnalités",
@@ -73,72 +95,72 @@ module.exports = {
         }) 
 
 
-        .get('/point',function(req,res){
+        .get('/point/:x/:y',function(req,res){
 
-            var imagePath = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
+            // var imagePath = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
+            
+            //query
+            // let x = parseFloat(req.query.x);
+            // let y = parseFloat(req.query.y);
 
-            let x = parseFloat(req.query.x);
-            let y = parseFloat(req.query.y);
+            let x = parseFloat(req.params.x);
+            let y = parseFloat(req.params.y);
 
             // var pente = penteModule.zevenbergenAndThorneSlopeComputing(1,2,3);
-
             let i = x;
             let j = y;
-            
             (async function(){
-
-
-                // const pool = new GeoTIFF.Pool();
-                // lecture image raster à partir d'un URL
-                // const tiff = await GeoTIFF.fromFile(imagePath);
+                // const response = await GeoTIFF.fromFile(imagePath);
+                // const arrayBuffer = await response.arrayBuffer();
+                // const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
                 // const image = await tiff.getImage();
-                // const response = image.arrayBuffer();
-
-                const response = await GeoTIFF.fromFile(imagePath);
-                const arrayBuffer = await response.arrayBuffer();
-                const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
-                const image = await tiff.getImage();
-                // console.log(image);
 
                 const imageWidth = 40;
                 const imageHeight = 40;
 
-                const data = await image.readRasters({
-                    // top:0,
-                    // left:3000,
-                    // right:3100,
-                    // bottom:1 
-                    width: imageWidth,
-                    height: imageHeight
-                    // ,pool
-                });
+                // const geometry = [x,y];
 
-                var pixel_value = data[0][i + imageWidth * j];
+                // const data = await image.readRasters({
+                //     // top:0,
+                //     // left:3000,
+                //     // right:3100,
+                //     // bottom:1 
+                //     width: imageWidth,
+                //     height: imageHeight
+                //     // ,pool
+                // });
 
+                //fonction du choix de l'unité et de l'algoritme
+                function valProperties(valQuery,valeurInseree,valeurDefaut){
+                    if(valQuery == valeurInseree){
+                        return valeurInseree;
+                    }else{
+                        return valeurDefaut;
+                    }
+                }
 
-                // var image = {
-                //     "image":[
-                //         [,,],
-                //         [,pixel_value,],
-                //         [,,]
-                //     ]
-                // }
+                let unite = valProperties(req.query.unit,'prc','deg');
+                let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');             
 
-                // console.log(j);
-                // console.log(i + imageWidth * j + 1);
-                // console.log(pixel_value);
+                var properties = {
+                    "algoritme" : algo,
+                    "unite" : unite,
+                    "projection" : req.query.proj
+                };
+
+                // var pixel_value = data[0][i + imageWidth * j];
+                let pente = 1;
                 res.json({
                     "i image":i,
                     "j image":j,
-                    "valeur de pixel":pixel_value,
-                    "pente":pente,
-                    "image":response
+                    "geometrie":[x,y],
+                    "pente":0,
+                    "properties":properties                
+                    // "image":response
                 })
             
-
             })()
         })
-<<<<<<< HEAD
 
         .get('/surface',function(req,res){
           res.json({
@@ -148,68 +170,11 @@ module.exports = {
             "projection":"proj"
           })
         })
-=======
-        
-        app.get('/polyligne', function (req, res) {
-            let x = req.query.x;
-            let y = req.query.y;
-            let listepoint = req.query.listepoint;
-            let nb_point = req.query.nb_point;
-            let typecoord = req.query.typecoord;
-            //let lst_x = [];
-            //let lst_y = [];
-            
-            let lst_pente = [];
-            let lst_orien = [];
-            let lst_pente_trie;
-			let min_pente;
-			let max_pente;
-			let moy_pente;
-            let somme_pente;
-            
-            //reconstruit la liste de point
-            if(listepoint.length > nb_point){
-				let point_pas = Math.floor(listepoint / nb_point);//on prend un point tout les x point_pas
-				let new_list_point = [];
-				for(let j = 0; j < listepoint; j + point_pas){
-					new_list_point.push(listepoint[j]);
-				}
-				listepoint = new_list_point;
-			}
-			
-			//calcule pour chaque point la pente et l'orientation
-            for(let i = 0; i < listepoint.length; i++){
-				lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
-				lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
-			}
-			
-			lst_pente_trie = lst_pente.sort();
-			
-			min_pente = lst_pente_trie[0];
-			max_pente = lst_pente_trie[lst_pente_trie.length - 1];
-			
-			somme_pente = lst_pente.reduce((a,b)=> a + b, 0); //additionne toute les valeurs du tableau
-			moy_pente = somme_pente / lst_pente.length;
-            
-            for (let i = 0; i < nb_point; i++){
-				res[i].json({
-					"lat utilisateur": x[i],
-					"long utilisateur": y[i], 
-					"alti": 0,
-					"pente": lst_pente[i],
-					"orientation": lst_orien[i],
-					"lat reel": 0,
-					"long reel": 0
-				});
-			}
-          })
->>>>>>> a15bed5ccda6766bf21be7201481c59ac415f9c3
           
         .listen(8080, function () {
             console.log('Listening on port 8080!');
             });
 
-        
     }
 
 }

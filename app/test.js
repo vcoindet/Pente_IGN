@@ -257,7 +257,7 @@ var geojson = {
     "coordinates":[
         [
             0,
-            0,
+            0
         ],
         [
             10,

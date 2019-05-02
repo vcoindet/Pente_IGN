@@ -12,6 +12,7 @@ var GeoTIFF = require('geotiff');
 
 //buffer de 4 octets
         var buffer = new Buffer.alloc(4);
+        var buffer2 = new Buffer.alloc(4);
 
         /** 
          * @param imagePath : répertoire de l'image tif
@@ -27,46 +28,75 @@ var GeoTIFF = require('geotiff');
         var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
         var fd = fs.openSync(imagePath,"r");
 
-        var N = 16;
-        var initTileOffset = 2048;
-        var iniTileByteCounts = initTileOffset * 4 * N;
-        var initTile = initTileOffset + 2 * 4 * N;//utile ?
+        var N = 256;
+        // var initTileOffset = 2048;
+        //ex lire 5e tuile
+        var nTuile = 5
+        var tileHeader = 2048;
+        var tileOffset = tileHeader + nTuile * 4;
+        var tileByteCount = tileOffset + N * 4 + nTuile * 4
         
         //ex lire 2 eme tuile
-        var addTuile2 = initTileOffset + buffer.readInt32LE(0) + 4;
-        var taille = iniTileByteCounts + buffer.readInt32LE(0) + 4;
-        var tuile = initTile + buffer.readInt32LE(0) + 4;
+        // var addTuile2 = initTileOffset + buffer.readInt32LE(0) + 4;
+        // var taille = iniTileByteCounts + buffer.readInt32LE(0) + 4;
+        // var tuile = initTile + buffer.readInt32LE(0) + 4;
         
-        //on obtient l'adresse de la tuile 2
-        fs.readSync(fd,buffer,0,4,addTuile2);
+        //on obtient l'adresse de la tuile 5
+        fs.readSync(fd,buffer,0,4,tileOffset);
+        console.log(buffer);
+
         var pos_tuile = buffer.readInt32LE(0);
-        console.log("adresse de la tuile : " + pos_tuile);
+        console.log("offset : " + pos_tuile);
         //adresse de la tuile : 92736
         
         //on obtient la taille de la tuile 2
-        fs.readSync(fd,buffer,0,4,taille);
-        var taille_tuile = buffer.readInt32LE(0);
-        console.log("taille de la tuile : " + taille_tuile);
+        fs.readSync(fd,buffer2,0,4,tileByteCount);
+        
+        //taille tuile
+        var taille_tuile = buffer2.readInt32LE(0);
+        console.log("taille : " + taille_tuile);
+
+        var buffer3 = new Buffer.alloc(taille_tuile);
+        console.log(buffer3);
+        
+        fs.readSync(fd,buffer3,0,4,pos_tuile);
+        var tuile = buffer3.readInt32LE(0);
+        console.log("tuile : " + tuile);
+        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer3)
+        // fs.writeSync(fs.openSync("/home/formation/Bureau/datafile.tif","w"),buffer3,0,4,pos_tuile);
+        
+        fs.closeSync(fd);
+        // var taille_tuile = buffer.readInt32LE(0);
+        // console.log("taille de la tuile : " + taille_tuile);
         //taille de la tuile : 1651107247
         
         //nouveau buffer qui prend en compte la taille de la tuile
-        var buffer_2 = new Buffer.alloc(taille_tuile);
+        // var buffer_2 = new Buffer.alloc(taille_tuile);
         
         //récupération de la tuile à partir des résultat obtenus précédement
-        fs.readSync(fd,buffer_2,0,taille_tuile,pos_tuile);
-        var tuile = buffer_2.readInt32LE(0);
-        console.log("tuile : " + tuile);
+        // fs.readSync(fd,buffer_2,0,taille_tuile,pos_tuile);
+        // var tuile = buffer_2.readInt32LE(0);
+        // console.log("tuile : " + tuile);
         //tuile : -576938888
         
         //écriture du fichier tif de la tuile obtenue
-        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer_2)
+        // fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer_2)
         
         // lecture d'une tuile avec geotiff.js 
-        // const tiff = await GeoTIFF.fromArrayBuffer(buffer_2);
+        // const tiff = await GeoTIFF.fromArrayBuffer(buffer3);
         // console.log(tiff);
     })()
 
 
+var xhr = new XMLHttpRequest();
+xhr.responseType = 'arraybuffer';
+xhr.open('GET', "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif");
+xhr.onload = function (e) {
+    var tiff = new Tiff({buffer: xhr.response});
+    var canvas = tiff.toCanvas();
+    document.body.append(canvas);
+};
+xhr.send();
 
 
 

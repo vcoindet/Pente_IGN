@@ -141,6 +141,38 @@ function searchIndiceCoord(x, y){
 
  /**
   * @function
+  * @name indiceDalle
+  * @description Renvoie coord HG de dalle auquel appartient
+  * les coordoonées longitude altitude en paramètre
+  * @param {int} X - latitude de l'utilisateur
+  * @param {int} Y - longitude de l'utilisateur
+  * @return {lst[int]} coordDalle - coordonées haut gauche de la dalle
+  */
+function indiceDalle(X, Y){
+	let diff;
+	let itteration;
+	let Xdalle;
+	let Ydalle;
+	let coordDalle;
+	
+	//calcule de la coord X HG de la dalle
+	diff = X - X0;
+	itteration = Math.trunc(diff / MatrixW);
+	Xdalle = X0 + (itteration * MatrixW);
+
+	//calcule de la coord Y HG de la dalle
+	diff = Y0 - Y;
+	itteration = Math.trunc(diff / MatrixH);
+	Ydalle = Y0 - (itteration * MatrixH);
+	
+	coordDalle = [Xdalle, Ydalle];
+	
+	console.log("coord dalle : " + coordDalle.toString());
+	return coordDalle;
+}
+
+ /**
+  * @function
   * @name indiceTuile
   * @description Renvoie indice de tuile 
   * en fonction d'indice de dalle
@@ -148,11 +180,13 @@ function searchIndiceCoord(x, y){
   * @param {int} Y - ordonnee du coin supérieur gauche de la dalle
   * @return {lst[int]} indice - indice de la tuile
   */
-function indiceDalle(X, Y){
+function indiceTuile(X, Y){
 	let colonne = ((X - X0) / (tilesPerWidth * TileW * resolution));
 	let ligne = ((Y0 - Y) / (tilesPerHeight * TileH * resolution));
 	
 	let indice = [parseInt(colonne), parseInt(ligne)];
+	
+	console.log("coord tuile : " + indice.toString());
 	return indice;
 }
 
@@ -223,24 +257,19 @@ function createParse(X, Y, level, format){
   */
 function coordToindice(x, y, niveau, type){
 	//recherche de la dalle ou sont les coords
-	let res = searchIndiceCoord(x, y);
+	//let res = searchIndiceCoord(x, y);
 
-	let Xdalle = res[0];
-	let Ydalle = res[1];
+	//let Xdalle = res[0];
+	//let Ydalle = res[1];
 
 	//console.log(Xdalle);
 	//console.log(Ydalle);
-
-	//
-	let resTuile = indiceDalle(Xdalle, Ydalle);
-
-	let Xtuile = Xdalle;//resTuile[0]
-	let Ytuile = Ydalle;//resTuile[1]
 	
-	console.log(Xtuile);
-	console.log(Ytuile);
+	let dalle = indiceDalle(x, y);
 
-	let resConvert = convert36(Xtuile, Ytuile);
+	let coordTuile = indiceTuile(dalle[0], dalle[1]);
+	
+	let resConvert = convert36(coordTuile[0], coordTuile[1]);
 	
 	Xtuile = resConvert[0];
 	Ytuile = resConvert[1];
@@ -253,9 +282,13 @@ function coordToindice(x, y, niveau, type){
 	return chemin;
 }
 
-var Xparis = 914068.76;
-var Yparis = 6457774.34;
-//223 247 max min de X
-//1327 1512 max min de Y
-console.log(coordToindice(Xparis, Yparis, "8", "tif"));
+var Xparis = 652470.64;
+var Yparis = 6862036.80;
+//coord tuile de paris :
+//159
+//1252
 
+//223 247 min max de X
+//1327 1512 min max de Y
+console.log(coordToindice(Xparis, Yparis, "8", "tif"));
+console.log(convert36(225,1350));

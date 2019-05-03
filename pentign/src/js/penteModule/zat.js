@@ -2,33 +2,28 @@
 // function zat_algoritm(x,y,z,image){
 
 // }
+// l'algorithme de Zevenbergen and Throne propose un modèle quadratique
 
 
-function zat_algoritm(image){
+function zat_algoritm(image,taille_pixel){
     var i = 1
     var j = 1
 
     var z = image['image'][i][j];
-    var l = 10;
+    var Z2 = image['image'][i-1][j];
+    var Z4 = image['image'][i][j-1];
+    var Z6 = image['image'][i][j+1];
+    var Z8 = image['image'][i+1][j];
 
-    var g = (-image['image'][i][j-1]+image['image'][i][j+1])/(2*l);
-    var h = (image['image'][i-1][j]-image['image'][i+1][j])/(2*l);
+    var G = (-Z4+Z6)/(2*taille_pixel);
+    var H = (Z2-Z8)/(2*taille_pixel);
 
-    var slope = Math.sqrt((g**2+h**2));
+    var slope = Math.sqrt(G**2+H**2)
     var slope_angle = Math.atan(slope) * 180 / Math.PI;
-    var aspect = Math.atan(-h/-g) * 180 / Math.PI + 180;
+    var aspect = Math.atan(H/G) * 180 / Math.PI;
 
-    //orientation par rapport au nord
-    // if(aspect < 0){
-    //     aspect += 360; 
-    // }
-
-    // console.log(g);
-    // console.log(h);
-    // console.log(slope);
-
-    // console.log("angle de la pente : " + slope_angle);
-    // console.log("orientation par rapport à l'axe x : " + aspect);
+    console.log("pente : " + slope_angle);
+    console.log("orientation : " + aspect);
 }
 
 var image = {
@@ -39,14 +34,14 @@ var image = {
     ]
 };
 
-zat_algoritm(image);
+zat_algoritm(image,10);
 
 var image2 = {
     "image":[
-        [3,2,1],
-        [3,2,1],
-        [3,2,1]
+        [1,45,3],
+        [30,2,30],
+        [1,10,3]
     ]
 }
 
-zat_algoritm(image2);
+zat_algoritm(image2,10);

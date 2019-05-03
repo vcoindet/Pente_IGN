@@ -25,7 +25,7 @@ var GeoTIFF = require('geotiff');
          * 
         */
 
-        var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
+        var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/CW.tif";
         var fd = fs.openSync(imagePath,"r");
 
         var N = 256;
@@ -41,6 +41,11 @@ var GeoTIFF = require('geotiff');
         // var taille = iniTileByteCounts + buffer.readInt32LE(0) + 4;
         // var tuile = initTile + buffer.readInt32LE(0) + 4;
         
+        var bufferHeader = new Buffer.alloc(2048);
+        fs.readSync(fd,bufferHeader,0,2048,0);
+        console.log(bufferHeader.readInt32LE(0));
+        
+
         //on obtient l'adresse de la tuile 5
         fs.readSync(fd,buffer,0,4,tileOffset);
         console.log(buffer);
@@ -59,11 +64,15 @@ var GeoTIFF = require('geotiff');
         var buffer3 = new Buffer.alloc(taille_tuile);
         console.log(buffer3);
         
-        fs.readSync(fd,buffer3,0,4,pos_tuile);
+        fs.readSync(fd,buffer3,0,taille_tuile,pos_tuile);
         var tuile = buffer3.readInt32LE(0);
         console.log("tuile : " + tuile);
-        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer3)
-        // fs.writeSync(fs.openSync("/home/formation/Bureau/datafile.tif","w"),buffer3,0,4,pos_tuile);
+        
+        // fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer3)
+        var buf = Buffer.concat([bufferHeader,buffer,buffer2,buffer3])
+        console.log(buf);
+        
+        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buf)
         
         fs.closeSync(fd);
         // var taille_tuile = buffer.readInt32LE(0);
@@ -86,19 +95,6 @@ var GeoTIFF = require('geotiff');
         // const tiff = await GeoTIFF.fromArrayBuffer(buffer3);
         // console.log(tiff);
     })()
-
-
-var xhr = new XMLHttpRequest();
-xhr.responseType = 'arraybuffer';
-xhr.open('GET', "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif");
-xhr.onload = function (e) {
-    var tiff = new Tiff({buffer: xhr.response});
-    var canvas = tiff.toCanvas();
-    document.body.append(canvas);
-};
-xhr.send();
-
-
 
 // readTile(i,j)
 

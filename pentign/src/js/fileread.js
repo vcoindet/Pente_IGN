@@ -1,18 +1,19 @@
 
 const express = require('express')
-const penteModule = require('./penteModule/penteModule.js');
-var GeoTIFF = require('geotiff');
+// const penteModule = require('./penteModule/penteModule.js');
+// var GeoTIFF = require('geotiff');
 var fs = require('fs');
-var FileReader = require('filereader')
+// var FileReader = require('filereader')
 
 const app = express();
-var GeoTIFF = require('geotiff');
+// var GeoTIFF = require('geotiff');
 
 (async function(i,j){
 
 //buffer de 4 octets
         var buffer = new Buffer.alloc(4);
-        var buffer2 = new Buffer.alloc(4);
+        // var buffer = new Uint8Array(4);
+        // var buffer2 = new Buffer.alloc(4);
 
         /** 
          * @param imagePath : répertoire de l'image tif
@@ -25,16 +26,27 @@ var GeoTIFF = require('geotiff');
          * 
         */
 
-        var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/CW.tif";
+        // path linux
+        // var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/CW.tif";
+        // path windows
+        var imagePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/GW.tif";
         var fd = fs.openSync(imagePath,"r");
 
         var N = 256;
         // var initTileOffset = 2048;
         //ex lire 5e tuile
-        var nTuile = 5
+        var nTuile = 125;
         var tileHeader = 2048;
         var tileOffset = tileHeader + nTuile * 4;
-        var tileByteCount = tileOffset + N * 4 + nTuile * 4
+        var tileByteCount = tileHeader + N * 4 + nTuile * 4;
+
+        
+        
+        console.log("TileOffset position: " + tileOffset);
+        console.log("TileByteCount position: " + tileByteCount);
+        
+        
+        
         
         //ex lire 2 eme tuile
         // var addTuile2 = initTileOffset + buffer.readInt32LE(0) + 4;
@@ -42,6 +54,35 @@ var GeoTIFF = require('geotiff');
         // var tuile = initTile + buffer.readInt32LE(0) + 4;
         
         var bufferHeader = new Buffer.alloc(2048);
+
+        var ArrayHeader = new Uint8Array(134);
+
+        var bufferHeader2 = new Buffer.alloc(134);
+
+        ArrayHeader = [
+                73,73,  42,0,   8 ,0,   0, 0,                  // 0  | tiff header 'II' (Little endian) + magick number (42) + offset de la IFD (16)
+                10, 0,                                         // 8  | nombre de tags sur 16 bits (10)
+                // ..                                                | TIFFTAG              | DATA TYPE | NUMBER | VALUE
+                0, 1,   4, 0,   1, 0, 0, 0,   0, 1, 0, 0,      // 10 | IMAGEWIDTH      (256)| LONG  (4) | 1      | 256
+                1, 1,   4, 0,   1, 0, 0, 0,   0, 1, 0, 0,      // 22 | IMAGELENGTH     (257)| LONG  (4) | 1      | 256
+                2, 1,   3, 0,   1, 0, 0, 0,   8, 0, 0, 0,      // 34 | BITSPERSAMPLE   (258)| SHORT (3) | 1      | pointeur vers un bloc mémoire 8
+                3, 1,   3, 0,   1, 0, 0, 0,   1, 0, 0, 0,      // 46 | COMPRESSION     (259)| SHORT (3) | 1      | 1 (pas de compression)
+                6, 1,   3, 0,   1, 0, 0, 0,   1, 0, 0, 0,      // 58 | PHOTOMETRIC     (262)| SHORT (3) | 1      | 1 (black is zero)
+                17,1,   4, 0,   1 ,0, 0, 0,   134,0,0, 0,      // 70 | STRIPOFFSETS    (273)| LONG  (4) | 16     | 134
+                21,1,   3, 0,   1, 0, 0, 0,   1, 0, 0, 0,      // 82 | SAMPLESPERPIXEL (277)| SHORT (3) | 1      | 1
+                22,1,   4, 0,   1, 0, 0, 0,   255,255,255,255, // 94 | ROWSPERSTRIP    (278)| LONG  (4) | 1      | 2^32-1 = single strip tiff
+                23,1,   4, 0,   1, 0, 0, 0,   0, 0, 3, 0,      // 106| STRIPBYTECOUNTS (279)| LONG  (4) | 1      | 256 * 256 * 3
+                83,1,   3, 0,   1, 0, 0, 0,   1, 0, 0, 0,      // 118| SAMPLEFORMAT    (339)| SHORT (3) |        | 1 (Int8)
+                0, 0, 0, 0                                     // 130| fin de l'IFD
+        ];                         // 134
+                                                         // 146";
+
+        for(let i = 0; i < bufferHeader2.length; i++){
+            bufferHeader2[i] = ArrayHeader[i];
+        }
+
+        console.log("Buffer Header : "+bufferHeader2.toString());
+        
         fs.readSync(fd,bufferHeader,0,2048,0);
         console.log(bufferHeader.readInt32LE(0));
         
@@ -50,15 +91,16 @@ var GeoTIFF = require('geotiff');
         fs.readSync(fd,buffer,0,4,tileOffset);
         console.log(buffer);
 
+        console.log("N° Tuile :" + nTuile);
         var pos_tuile = buffer.readInt32LE(0);
         console.log("offset : " + pos_tuile);
         //adresse de la tuile : 92736
         
-        //on obtient la taille de la tuile 2
-        fs.readSync(fd,buffer2,0,4,tileByteCount);
+        //on obtient la taille de la tuile 5
+        fs.readSync(fd,buffer,0,4,tileByteCount);
         
         //taille tuile
-        var taille_tuile = buffer2.readInt32LE(0);
+        var taille_tuile = buffer.readInt32LE(0);
         console.log("taille : " + taille_tuile);
 
         var buffer3 = new Buffer.alloc(taille_tuile);
@@ -69,11 +111,14 @@ var GeoTIFF = require('geotiff');
         console.log("tuile : " + tuile);
         
         // fs.writeFileSync("/home/formation/Bureau/datafile.tif",buffer3)
-        var buf = Buffer.concat([bufferHeader,buffer,buffer2,buffer3])
+        var buf = Buffer.concat([bufferHeader2,buffer3],134+taille_tuile);
         console.log(buf);
         
-        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buf)
+        // write path linux
+        // fs.writeFileSync("/home/formation/Bureau/datafile.tif",buf)
         
+        //write path Windows
+        fs.writeFileSync("C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/datafile.tif",buf)
         fs.closeSync(fd);
         // var taille_tuile = buffer.readInt32LE(0);
         // console.log("taille de la tuile : " + taille_tuile);
@@ -135,15 +180,15 @@ var GeoTIFF = require('geotiff');
 //     // let orient = penteModule.computeAspect(x,y);
 // })
 
-app.get('/',function(req,res){
-    let x = req.query.x;
-    let y = req.query.y;
+// app.get('/',function(req,res){
+//     let x = req.query.x;
+//     let y = req.query.y;
 
-})
+// })
 
-.listen(8080, function () {
-    console.log('Listening on port 8080!');
-    });
+// .listen(8080, function () {
+//     console.log('Listening on port 8080!');
+//     });
 
 
 // let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";

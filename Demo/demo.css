@@ -1,0 +1,28 @@
+#mapid { height: 800px;  } 
+
+h1 {
+        font-family: 'Lato';
+        text-align: center;
+        color: brown;
+        
+        } 
+
+        #image {
+                display: flex; 
+                position : absolute;
+                top: 0px;
+                right : 5px;
+               
+                 
+        }
+        img {
+            height : 120px;
+            width : 120px;
+            margin-top: 5px;
+
+        }
+
+        body {
+            background-color :rgb(232, 245, 231);
+        }
+      

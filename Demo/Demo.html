@@ -65,22 +65,27 @@
     var osmGeocoder = new L.Control.OSMGeocoder();
     mymap.addControl(osmGeocoder);
 
+    //layer pour les marker
     var theMarker = {};
+
+    //layer pour les lignes
+    var theMarkerLigne = {};
 
     //init tableau de point pour la polyligne
     var tab_point = [];    
+    var polyline = [];
 
-    // mymap.on('click',function Pointe(e){
-    //     var lat = e.latlng.lat;
-    //     var lon = e.latlng.lng;
-    //     //var pour enregister les coords du marker
-    //     let coord;
+    //  mymap.on('click',function Pointe(e){
+    //   var lat = e.latlng.lat;
+    //   var lon = e.latlng.lng;
+    //   //var pour enregister les coords du marker
+    //    let coord;
 
-    //     //Add a marker to show where you clicked.
-    //     theMarker = L.marker([lat,lon]).addTo(mymap);  
-    //     theMarker.bindPopup('' + theMarker.getLatLng()).openPopup();
-    //     coord = theMarker.getLatLng();
-    //     });
+    // //     //Add a marker to show where you clicked.
+    //  theMarker = L.marker([lat,lon]).addTo(mymap);  
+    //      theMarker.bindPopup('' + theMarker.getLatLng()).openPopup();
+    //      coord = theMarker.getLatLng();
+    //      });
 
     // mymap.on('click',function Ligne(e){
 
@@ -118,26 +123,51 @@
 
 
     //var url = "www.penteign/point/?coord=" + newMarker.getLatLng()+"&algo=1&unit='deg'&projection=2154";
-
-
+    var polylines = L.layerGroup(polyline,theMarker).addTo(mymap);
 
 </script>
+
 </div>
+
 <div id= 'button'>
 
-    <label>Point<input type="radio" id= 'mycheck' name = 'hey'>
-    <label>Ligne<input type="radio" id = 'checke'name = 'hey'>
+    <label>Ligne<input type="checkbox" id ='checke' name ='hey'></label>
+    
     <script>
         var checkbox = document.getElementById('checke');
-        var mycheck = document.getElementById('mycheck');
-        if (checkbox.checked == true ) {
-            mymap.on('click',function Ligne(e){
-                console.log('pute');
+        var elem_map = document.getElementById('mapid');
+   
+
+        //console.log(elem_map.offsetLeft);
+        //console.log(elem_map.offsetTop);
+        
+        console.log(checkbox.checked);
+        function create_point(){
+            mymap.on('click',function Pointe(e){
+                    var lat = e.latlng.lat;
+                    var lon = e.latlng.lng;
+                    //var pour enregister les coords du marker
+                    let coord;
+                
+                    if (theMarker != undefined) {     
+                        mymap.removeLayer(theMarker);
+                    }
+
+                    //Add a marker to show where you clicked.
+                    theMarker = L.marker([lat,lon]).addTo(mymap);  
+                    coord = theMarker.getLatLng(); 
+                    theMarker.bindPopup('' + coord).openPopup();
+                     
+            });
+        }
+
+        function create_ligne(){
+            mymap.on('click',function (e){
                 var lat = e.latlng.lat;
                 var lon = e.latlng.lng;
                 //var pour enregister les coords du marker
                 let coord;
-
+            
                 //Add a marker to show where you clicked.
                 theMarker = L.marker([lat,lon]).addTo(mymap);  
                 theMarker.bindPopup('' + theMarker.getLatLng()).openPopup();
@@ -148,31 +178,44 @@
                 //enregistre les coords dans le tableau
                 tab_point.push([coord["lat"], coord["lng"]]);
 
-                console.log(tab_point);
+                //console.log(tab_point);
 
-                if(tab_point.length > 3){
-                    var polyline = L.polyline(tab_point, {color: 'red'}).addTo(mymap);
-}    
-});
-        }
-        if  (mycheck.checked == true) {
-            mymap.on('click',function Pointe(e){
-            var lat = e.latlng.lat;
-            var lon = e.latlng.lng;
-            //var pour enregister les coords du marker
-            let coord;
-
-            //Add a marker to show where you clicked.
-            theMarker = L.marker([lat,lon]).addTo(mymap);  
-            theMarker.bindPopup('' + theMarker.getLatLng()).openPopup();
-            coord = theMarker.getLatLng(); 
-            
-            if (theMarker != undefined) {     
-                mymap.removeLayer(theMarker);
-    };
-
+                if(tab_point.length > 2){
+                    console.log('ligne');
+                    
+                    polyline = L.polyline([tab_point, {color: 'green'}]).addTo(mymap);
+                }    
             });
         }
+
+        function chose_geom(){
+            if(checkbox.checked){
+                create_ligne();
+            }
+
+            else{
+                create_point();
+            }
+        };
+
+        function clear (){
+            if (theMarker != undefined ) {     
+                
+                mymap.removeLayer(theMarker);
+                
+            }
+            if (polyline != undefined) {
+              mymap.removeLayer(polyline);  
+            }
+            
+        }
+    
+  
+
+     
+        elem_map.addEventListener("click", chose_geom);
+        checkbox.addEventListener("click",clear);
+        
     </script>
 </div>
 
@@ -180,6 +223,6 @@
     <h5> Projet de développement : Joachim BOCAZ-COEFFE, Hadrien SINEY, Stéphane WILHELM<h5>
 <img id = 'ola' src= 'https://www.u-pem.fr/charte-graphique/fileadmin/public/UPEMLV/charte-graphique/download/logos/upem/UPEM_LOGO_SIGNALETIQUE_300DPI.png'>
 <img id = 'ola'src='http://www.ensg.eu/-MEP0-/apv/logo_ensg_rwd.png'>
-<img id = 'ola' src = 'https://static.data.gouv.fr/avatars/1b/e4985396724faf9f6e1122baa7b65c.gif'>
+<img src = 'https://static.data.gouv.fr/avatars/1b/e4985396724faf9f6e1122baa7b65c.gif'>
 </body>
 </html>

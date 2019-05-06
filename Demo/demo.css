@@ -25,4 +25,12 @@ h1 {
         body {
             background-color :rgb(232, 245, 231);
         }
+        #ola {
+            height : 100px;
+            width : 200px; 
+        }
+
+        h2,h5{
+            font-family: Helvetica;
+        }
       

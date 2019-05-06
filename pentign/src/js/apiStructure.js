@@ -1,6 +1,7 @@
 
 const express = require('express')
-const penteModule = require('./penteModule/penteModule.js');
+// const penteModule = require('./penteModule/penteModule.js');
+const algoZAT = require('./penteModule/algoZAT.js');
 var GeoTIFF = require('geotiff');
 var fs = require('fs');
 
@@ -27,6 +28,7 @@ module.exports = {
                 "unite" : req.query.unit,
                 "projection" : req.query.proj
             };
+            
             console.log(geometrie);
         
             res.json({
@@ -37,8 +39,6 @@ module.exports = {
             });
         
         })
-
-        /////
 
         app.get('/polyligne', function (req, res) {
             //query
@@ -95,16 +95,21 @@ module.exports = {
         }) 
 
 
-        .get('/point/:x/:y',function(req,res){
+        .get('/point',function(req,res){
 
             // var imagePath = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
             
             //query
-            // let x = parseFloat(req.query.x);
-            // let y = parseFloat(req.query.y);
 
-            let x = parseFloat(req.params.x);
-            let y = parseFloat(req.params.y);
+            var geometrie = JSON.parse(req.params.my_json);
+            
+            
+
+            let x = parseFloat(req.query.x);
+            let y = parseFloat(req.query.y);
+
+            // let x = parseFloat(req.params.x);
+            // let y = parseFloat(req.params.y);
 
             // var pente = penteModule.zevenbergenAndThorneSlopeComputing(1,2,3);
             let i = x;
@@ -153,7 +158,7 @@ module.exports = {
                 res.json({
                     "i image":i,
                     "j image":j,
-                    "geometrie":[x,y],
+                    "geometrie":geometrie,
                     "pente":0,
                     "properties":properties                
                     // "image":response

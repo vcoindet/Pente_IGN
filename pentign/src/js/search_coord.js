@@ -57,6 +57,7 @@ var pathDepth = 2; //profondeur arborescence
   * @param {int} Y - coord en lambert 93
   * @return {lst[int]} indice - coord haut gauche de la dalle en lambert93
   */
+
 function searchIndiceCoord(x, y){
 	let realW = resolution * TileW;//largeur reelle d'une tuile
 	let realH = resolution * TileH;//hauteur reelle d'une tuile
@@ -92,8 +93,6 @@ function searchIndiceCoord(x, y){
 	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
 	let Y_phase_bg = J_tms_bg * resolution;//coordonnée du pixel en bas concerné
 
-	let X_phase_final = -99999;
-	let Y_phase_final = -99999;
 	let I_phase_final = -99999;
 	let J_phase_final = -99999;
 
@@ -137,6 +136,48 @@ function searchIndiceCoord(x, y){
 	*/
 	
 	return [I_dalle, J_dalle];
+}
+
+function indiceCoord(x, y){
+	//X gauche
+	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
+	let X_phase_hg = I_tms_hg * resolution;//coordonnée du pixel à gauche concerné
+	
+	//X droite
+	let I_tms_hd = Math.ceil((x - X0)) / resolution;//indice du pixel sur l'ensemble
+	let X_phase_hd = I_tms_hd * resolution;//coordonnée du pixel à droite concerné
+	
+	//Y haut
+	let J_tms_hg = Math.floor((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
+	let Y_phase_hg = J_tms_hg * resolution;//coordonnée du pixel en haut concerné
+
+	//Y bas
+	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
+	let Y_phase_bg = J_tms_bg * resolution;//coordonnée du pixel en bas concerné
+
+
+	if(Math.abs(X_phase_hd - x) < Math.abs(x - X_phase_hg)){
+		X_phase_final = X_phase_hd;//coord X le plus proche
+		I_phase_final = I_tms_hd;
+	}
+	else{
+		X_phase_final = X_phase_hg;//coord X le plus proche
+		I_phase_final = I_tms_hg;
+	}
+	
+	if(Math.abs(Y_phase_hg - y) < Math.abs(y - Y_phase_bg)){
+		Y_phase_final = Y_phase_hg;//coord Y le plus proche
+		J_phase_final = J_tms_hg;
+	}
+	else{
+		Y_phase_final = Y_phase_bg;//coord Y le plus proche
+		J_phase_final = J_tms_bg;
+	}
+
+	let I_phase = I_phase_final % TileW;//indice I du pixel dans la tuile
+	let J_phase = J_phase_final % TileH;//indice J du pixel dans la tuile
+
+	return [I_phase, J_phase];
 }
 
  /**
@@ -266,9 +307,7 @@ function coordToindice(x, y, niveau, type){
 	//console.log(Ydalle);
 	
 	let dalle = indiceDalle(x, y);
-
 	let coordTuile = indiceTuile(dalle[0], dalle[1]);
-	
 	let resConvert = convert36(coordTuile[0], coordTuile[1]);
 	
 	Xtuile = resConvert[0];
@@ -292,3 +331,4 @@ var Yparis = 6862036.80;
 //1327 1512 min max de Y
 console.log(coordToindice(Xparis, Yparis, "8", "tif"));
 console.log(convert36(225,1350));
+console.log(indiceCoord(Xparis,Yparis));

@@ -5,7 +5,7 @@
 // l'algorithme de Zevenbergen and Throne propose un modèle quadratique
 
 
-function zat_algoritm(image,taille_pixel){
+function zat_algoritm_compute(image,taille_pixel){
     var i = 1
     var j = 1
 
@@ -22,8 +22,9 @@ function zat_algoritm(image,taille_pixel){
     var slope_angle = Math.atan(slope) * 180 / Math.PI;
     var aspect = Math.atan(H/G) * 180 / Math.PI;
 
-    console.log("pente : " + slope_angle);
-    console.log("orientation : " + aspect);
+    return {"slope":slope_angle,
+            "aspect":aspect
+        };
 }
 
 var image = {
@@ -34,8 +35,6 @@ var image = {
     ]
 };
 
-zat_algoritm(image,10);
-
 var image2 = {
     "image":[
         [1,45,3],
@@ -44,4 +43,6 @@ var image2 = {
     ]
 }
 
-zat_algoritm(image2,10);
+
+console.log( "pente:" + zat_algoritm_compute(image2,10)["slope"]);
+

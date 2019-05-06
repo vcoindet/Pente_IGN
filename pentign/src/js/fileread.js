@@ -27,9 +27,10 @@ const app = express();
         */
 
         // path linux
-        // var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/CW.tif";
+        var imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/CW.tif";
         // path windows
-        var imagePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/GW.tif";
+        // var imagePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/GW.tif";
+
         var fd = fs.openSync(imagePath,"r");
 
         var N = 256;
@@ -39,14 +40,9 @@ const app = express();
         var tileHeader = 2048;
         var tileOffset = tileHeader + nTuile * 4;
         var tileByteCount = tileHeader + N * 4 + nTuile * 4;
-
-        
         
         console.log("TileOffset position: " + tileOffset);
         console.log("TileByteCount position: " + tileByteCount);
-        
-        
-        
         
         //ex lire 2 eme tuile
         // var addTuile2 = initTileOffset + buffer.readInt32LE(0) + 4;
@@ -54,9 +50,7 @@ const app = express();
         // var tuile = initTile + buffer.readInt32LE(0) + 4;
         
         var bufferHeader = new Buffer.alloc(2048);
-
         var ArrayHeader = new Uint8Array(134);
-
         var bufferHeader2 = new Buffer.alloc(134);
 
         ArrayHeader = [
@@ -85,7 +79,6 @@ const app = express();
         
         fs.readSync(fd,bufferHeader,0,2048,0);
         console.log(bufferHeader.readInt32LE(0));
-        
 
         //on obtient l'adresse de la tuile 5
         fs.readSync(fd,buffer,0,4,tileOffset);
@@ -95,7 +88,7 @@ const app = express();
         var pos_tuile = buffer.readInt32LE(0);
         console.log("offset : " + pos_tuile);
         //adresse de la tuile : 92736
-        
+
         //on obtient la taille de la tuile 5
         fs.readSync(fd,buffer,0,4,tileByteCount);
         
@@ -115,10 +108,10 @@ const app = express();
         console.log(buf);
         
         // write path linux
-        // fs.writeFileSync("/home/formation/Bureau/datafile.tif",buf)
+        fs.writeFileSync("/home/formation/Bureau/datafile.tif",buf);
         
         //write path Windows
-        fs.writeFileSync("C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/datafile.tif",buf)
+        // fs.writeFileSync("C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/datafile.tif",buf)
         fs.closeSync(fd);
         // var taille_tuile = buffer.readInt32LE(0);
         // console.log("taille de la tuile : " + taille_tuile);

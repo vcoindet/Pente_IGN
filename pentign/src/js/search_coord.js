@@ -332,3 +332,10 @@ var Yparis = 6862036.80;
 console.log(coordToindice(Xparis, Yparis, "8", "tif"));
 console.log(convert36(225,1350));
 console.log(indiceCoord(Xparis,Yparis));
+
+module.exports = {
+
+	indiceCoord : function(x,y){
+		return indiceCoord(x,y);
+	}
+}

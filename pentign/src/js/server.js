@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const pm = require('./utils/processManager.js');
 const express = require('express');
-const penteModule = require('./penteModule/penteModule.js');
+// const penteModule = require('./penteModule/penteModule.js');
 const apiStructure = require('./apiStructure.js');
 
 var LOGGER;

@@ -4,6 +4,8 @@ const express = require('express')
 const algoZAT = require('./penteModule/algoZAT.js');
 var GeoTIFF = require('geotiff');
 var fs = require('fs');
+var mnt_simul = require('./mnt_simul.js');
+var search_coord = require('./search_coord.js');
 
 module.exports = {
 
@@ -19,18 +21,35 @@ module.exports = {
     launch : function(){
 
         const app = express();
-        ////// liste de points obtenues par un JSON
-        app.get("/polyligne/:my_json",function (req,res){
 
-            var geometrie = JSON.parse(req.params.my_json);
+        //fonction du choix de l'unité et de l'algoritme
+        function valProperties(valQuery,valeurInseree,valeurDefaut){
+            if(valQuery == valeurInseree){
+                return valeurInseree;
+            }else{
+                return valeurDefaut;
+            }
+        }
+        
+        ////// liste de points obtenues par un JSON
+        app.get("/polyligne",function (req,res){
+
+            // var geometrie = JSON.parse(req.params.my_json);
+            let geometrie = JSON.parse(req.query.geom)
+
+            console.log(geometrie);
+        
+            console.log(geometrie['coord'][0]);
+
+            let unite = valProperties(req.query.unit,'prc','deg');
+            let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
+
             var properties = {
-                "algoritme" : req.query.algo,
-                "unite" : req.query.unit,
+                "algoritme" : algo,
+                "unite" : unite,
                 "projection" : req.query.proj
             };
             
-            console.log(geometrie);
-        
             res.json({
                 message : "On génère un json avec les paramètres de la lineString",
                 geometrie,
@@ -97,74 +116,51 @@ module.exports = {
 
         .get('/point',function(req,res){
 
-            // var imagePath = "C:/Users/User/Documents/PROJET MASTER CALCUL PENTE/penteign/template/RGEALTI_PYR_LAMB93/IMAGE/7/00/17/AD.tif";
-            
+            //test avec les coordonnées de Paris
+            let Xparis = 652470.64;
+            let Yparis = 6862036.80;
+
             //query
+            let longitude = parseFloat(req.query.lng);
+            let latitude = parseFloat(req.query.lat);
 
-            var geometrie = JSON.parse(req.params.my_json);
+            let geometrie = {
+                "latitude":latitude,
+                "longitude":longitude
+            };
+
+            let unite = valProperties(req.query.unit,'prc','deg');
+            let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');
+            let proj = valProperties(req.query.proj,'4326','2154');   
+
+            let properties = {
+                "algoritme" : algo,
+                "unite" : unite,
+                "projection" : proj
+            };
+
+            // obtention des coordonnées images
+            let coord_img = search_coord.indiceCoord(Xparis,Yparis);
+            console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
+
+            // repertoire image
+            let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
+
+            //obtention de la matric pour le calcul des pentes mnt
+            let matrix = getMatrix(coord_img,imagePath);
+            console.log("matrice : " + matrix);
             
             
 
-            let x = parseFloat(req.query.x);
-            let y = parseFloat(req.query.y);
-
-            // let x = parseFloat(req.params.x);
-            // let y = parseFloat(req.params.y);
-
-            // var pente = penteModule.zevenbergenAndThorneSlopeComputing(1,2,3);
-            let i = x;
-            let j = y;
-            (async function(){
-                // const response = await GeoTIFF.fromFile(imagePath);
-                // const arrayBuffer = await response.arrayBuffer();
-                // const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
-                // const image = await tiff.getImage();
-
-                const imageWidth = 40;
-                const imageHeight = 40;
-
-                // const geometry = [x,y];
-
-                // const data = await image.readRasters({
-                //     // top:0,
-                //     // left:3000,
-                //     // right:3100,
-                //     // bottom:1 
-                //     width: imageWidth,
-                //     height: imageHeight
-                //     // ,pool
-                // });
-
-                //fonction du choix de l'unité et de l'algoritme
-                function valProperties(valQuery,valeurInseree,valeurDefaut){
-                    if(valQuery == valeurInseree){
-                        return valeurInseree;
-                    }else{
-                        return valeurDefaut;
-                    }
-                }
-
-                let unite = valProperties(req.query.unit,'prc','deg');
-                let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');             
-
-                var properties = {
-                    "algoritme" : algo,
-                    "unite" : unite,
-                    "projection" : req.query.proj
-                };
-
-                // var pixel_value = data[0][i + imageWidth * j];
-                let pente = 1;
-                res.json({
-                    "i image":i,
-                    "j image":j,
-                    "geometrie":geometrie,
-                    "pente":0,
-                    "properties":properties                
-                    // "image":response
-                })
-            
-            })()
+            // var pixel_value = data[0][i + imageWidth * j];
+            // let pente = 1;
+            // json en sortie
+            res.json({
+                "geometrie":geometrie,
+                "pente":0,
+                "properties":properties,
+            })
+    
         })
 
         .get('/surface',function(req,res){
@@ -172,7 +168,8 @@ module.exports = {
             "listepoint":"listepoint",
             "algo":"algo",
             "unité":"unit",
-            "projection":"proj"
+            "projection":"proj",
+            "matrix":matrix
           })
         })
           

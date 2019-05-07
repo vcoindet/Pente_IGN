@@ -1,5 +1,7 @@
 
-const express = require('express')
+const express = require('express');
+const cors = require('cors'); //util pour les autorisation
+
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
 const algoHorn = require('./penteModule/algoHorn.js');
@@ -21,6 +23,7 @@ module.exports = {
 
     launch : function(){
 
+<<<<<<< HEAD
 
         //echantillon de matrice
         let matrix =
@@ -30,6 +33,10 @@ module.exports = {
               [ 698.3300170898438, 698.3800048828125, 698.4199829101562 ] ] };
 
         const app = express();// instanciation de l'application express
+=======
+        const app = express();
+        app.use(cors());
+>>>>>>> a321431075ea7d5eda8cf53b77a4aff1dedc56b9
 
         //fonction du choix de l'unité et de l'algoritme
         function valProperties(valQuery,valeurInseree,valeurDefaut){
@@ -274,8 +281,13 @@ module.exports = {
             // let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
 
             //obtention de la matric pour le calcul des pentes mnt
+<<<<<<< HEAD
             // let matrix = getMatrix(coord_img,imagePath);
             // console.log("matrice : " + matrix);
+=======
+            //let matrix = getMatrix(coord_img,imagePath);
+            //console.log("matrice : " + matrix);
+>>>>>>> a321431075ea7d5eda8cf53b77a4aff1dedc56b9
             
             
 

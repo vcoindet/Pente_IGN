@@ -1,5 +1,7 @@
 
-const express = require('express')
+const express = require('express');
+const cors = require('cors'); //util pour les autorisation
+
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
 var GeoTIFF = require('geotiff');
@@ -21,6 +23,7 @@ module.exports = {
     launch : function(){
 
         const app = express();
+        app.use(cors());
 
         //fonction du choix de l'unité et de l'algoritme
         function valProperties(valQuery,valeurInseree,valeurDefaut){
@@ -147,8 +150,8 @@ module.exports = {
             let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
 
             //obtention de la matric pour le calcul des pentes mnt
-            let matrix = getMatrix(coord_img,imagePath);
-            console.log("matrice : " + matrix);
+            //let matrix = getMatrix(coord_img,imagePath);
+            //console.log("matrice : " + matrix);
             
             
 

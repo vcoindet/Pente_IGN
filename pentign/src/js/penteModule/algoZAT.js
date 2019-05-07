@@ -5,7 +5,7 @@
 // l'algorithme de Zevenbergen and Throne propose un modèle quadratique
 
 
-function zat_algoritm_compute(image,taille_pixel){
+function zat_algoritm(image,taille_pixel){
     var i = 1
     var j = 1
 
@@ -43,6 +43,12 @@ var image2 = {
     ]
 }
 
+console.log(image2);
 
-console.log( "pente:" + zat_algoritm_compute(image2,10)["slope"]);
+console.log( "pente:" + zat_algoritm(image2,10)["slope"]);
 
+module.exports = {
+    compute : function(matrix,pixelSize){
+        return zat_algoritm(matrix,pixelSize);
+    }
+}

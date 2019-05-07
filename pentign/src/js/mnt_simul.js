@@ -36,14 +36,49 @@ const fs = require('fs');
 //     }
 // }
 
+async function readMNTTile(imagePath,left,top,tailleImage){
+    const tiff = await GeoTIFF.fromFile(imagePath);
+    const image = await tiff.getImage();
+    // const data = await image.readRasters({ window: [left, top, right, bottom] });
+    const data = await image.readRasters({ window: [left, top, left + tailleImage, top + tailleImage] });
+    // return data;
+    return data;
+}
 
-(async function getMatrix(){
+
+let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";// répertoire de l'image
+
+let tailleImage = 256 ;// taille en pixels d'une tuille
+let n_tuile = 1; // n de tuile
+let ind_i_tuile = Math.floor(n_tuile / 16); // indice i pour trouver la tuile
+let ind_j_tuile = (n_tuile - ind_i_tuile * 16) - 1; // indice j pour trouver la tuile
+
+let left = tailleImage * ind_j_tuile; // coordonnée image à gauche
+let top = tailleImage * ind_i_tuile; // coordonnée image en haut
+
+// readMNTTile(imagePath,left,top,tailleImage).then(function(message){dataFile = message}); //tuille issue de la fonction assynchrone
+// console.log(" Raster Tile : " + tileData);
+// console.log(readMNTTile(imagePath,left,top,tailleImage).resolve());
+// let dataFile = readMNTTile(imagePath,left,top,tailleImage);
+let dataFile = "";
+
+readMNTTile(imagePath,left,top,tailleImage).then((message) => console.log(message));
+// readMNTTile(imagePath,left,top,tailleImage).then(function(message){console.log(message)});
+// console.log("sdfdsfsd" + dataFile.then((message) => {message}));
+
+// console.log(dataFile);
+
+
+(async function(){
 
     // var imagePath = "/home/formation/Bureau/BZ.tif";
-    let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
+    // let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
+
     const tiff = await GeoTIFF.fromFile(imagePath);
+
     // const arrayBuffer = await response.arrayBuffer();
     // const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+
     const image = await tiff.getImage();
 
     let point_coord_ij = [183,44]; // exemple point de coordonnée i j pour l'image
@@ -53,15 +88,19 @@ const fs = require('fs');
     let n_tuile = 200; // n de tuile
     let ind_i_tuile = Math.floor(n_tuile / 16); // indice i pour trouver la tuile
     let ind_j_tuile = (n_tuile - ind_i_tuile * 16) - 1; // indice j pour trouver la tuile
+
     // console.log(ind_i_tuile);
     // console.log(ind_j_tuile);
     // const data = await image.readRasters({ window: [left, top, right, bottom] });
+
     let left = 256 * ind_j_tuile;
     let top = 256 * ind_i_tuile;
     let bottom = top + 256;
     let right = left + 256;
 
     const data = await image.readRasters({ window: [left,top,right,bottom] });
+
+
 
     // console.log(data); 
     // [ 183, 44 ]
@@ -109,7 +148,8 @@ const fs = require('fs');
 
 
 //valeurs interdites pour C F I
-var tab = []
+var tab = [];
+
 for(let i = 1;i<255;i++){
     tab.push(256*i);
 }

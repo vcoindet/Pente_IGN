@@ -1,27 +1,47 @@
 var checkbox = document.getElementById('checke');
 var elem_map = document.getElementById('mapid');
-var LayerObject = L.layergoup();
+//var LayerObject = L.layergoup();
 
 //console.log(elem_map.offsetLeft);
 //console.log(elem_map.offsetTop);
 
 console.log(checkbox.checked);
+
 function create_point(){
-	mymap.on('click',function Pointe(e){
+	mymap.on('click',function (e){
 		var lat = e.latlng.lat;
 		var lon = e.latlng.lng;
 		//var pour enregister les coords du marker
 		let coord;
-	
+		let donnee;
+		let pente;
+		
 		if (theMarker != undefined) {     
 			mymap.removeLayer(theMarker);
 		}
 
 		//Add a marker to show where you clicked.
 		theMarker = L.marker([lat,lon]).addTo(mymap);  
-		coord = theMarker.getLatLng(); 
-		theMarker.bindPopup('' + coord).openPopup();
+		
+		coord = theMarker.getLatLng();
+		donnee = web_service(coord["lat"], coord["lng"]);
+		console.log(donnee);
+		//pente = donnee["pente"];
+		
+		theMarker.bindPopup('' + coord + "\n" + "pente = ").openPopup();
 	});
+}
+
+function web_service(lat, lng){
+	let data = "lat=" + lat + "&lng=" + lng + "&algo='Horn'&unit='deg'&proj=2154";
+	let ajax = new XMLHttpRequest();
+	ajax.open('GET','http://localhost:8080/point');
+	ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	ajax.responseType = "json";
+	ajax.send(data);
+	
+	
+	return ajax.response;
 }
 
 function create_ligne(){
@@ -46,9 +66,8 @@ function create_ligne(){
 		if(tab_point.length > 2){
 			console.log('ligne');
 			
-			polyline = L.polyline([tab_point, {color: 'green'}]).addTo(LayerObject);
+			polyline = L.polyline([tab_point, {color: 'green'}]).addTo(mymap);
 		}
-		LayerObject.addTo(mymap)
 	});
 }
 

@@ -308,12 +308,16 @@ function coordToindice(x, y, niveau, type){
 
 	let Xdalle = res[0];
 	let Ydalle = res[1];
-	
+
 	console.log(Xdalle);
 	console.log(Ydalle);
 
 	let tmp = convert36(Xdalle, Ydalle);
-	
+
+	let chemin =  createParse(tmp[0], tmp[1], "8", "tif");
+
+	return chemin;
+	/*
 	console.log("chemin loic:" + createParse(tmp[0], tmp[1], "8", "tif"));
 	
 	let dalle = indiceDalle(x, y);
@@ -329,30 +333,39 @@ function coordToindice(x, y, niveau, type){
 	let chemin = createParse(Xtuile, Ytuile, niveau, type);
 	
 	return chemin;
+	*/
 }
 
-var Xparis = 652470.64;
-var Yparis = 6862036.80;
+//var Xparis = 652470.64;
+//var Yparis = 6862036.80;
 
-var Xforca = 822872.15;
-var Yforca = 6398954.09;
+//var Xannecy = 940169.63;
+//var Yannecy = 6538433.65;
 //coord tuile de paris :
 //159
 //1252
 
+//PYRAMIDE/IMAGE/8/01/61/D1.tif   Tuile annecy
+
 //223 247 min max de X
 //1327 1512 min max de Y
 console.log("coord paris : " + [Xparis, Yparis].toString());
-console.log(coordToindice(Xforca, Yforca, "8", "tif"));
+console.log(coordToindice(Xannecy, Yannecy, "8", "tif"));
 //console.log(convert36(225,1350));
 console.log(indiceCoord(Xparis,Yparis));
 
+/*
+let coordXtuile = 230 * tilesPerWidth; //i tuille
+let coordX = (coordXtuile * (resolution * TileW)) + X0	//x
 
-let x_tuille = I_dalle * tilesPerWidth; //i tuille
-let x = (x_tuille * (resolution * TileW)) + X0	//x
+let coordYtuile = 1400 * tilesPerHeight
+let coordY = -((coordYtuile * (resolution * TileH)) - Y0)
+
+console.log(coordX, coordY);
+*/
 
 
-
+/*
 let realW = resolution * TileW;//largeur reelle d'une tuile
 let realH = resolution * TileH;//hauteur reelle d'une tuile
 
@@ -360,13 +373,20 @@ let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
 let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
 
 
+jtuile = jdalle * tilesPerHeight
+y = -((jtuile * realH) - YO)
+
 let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
 let J_dalle = Math.floor(Jtuile / tilesPerHeight)
-
+*/
 
 module.exports = {
 
 	indiceCoord : function(x,y){
 		return indiceCoord(x,y);
+	},
+	
+	coordToindice : function(x, y, niveau, type){
+		return coordToindice(x, y, niveau, type);
 	}
 }

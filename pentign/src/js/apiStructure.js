@@ -8,7 +8,9 @@ const algoHorn = require('./penteModule/algoHorn.js');
 var GeoTIFF = require('geotiff');
 var fs = require('fs');
 // var mnt_simul = require('./mnt_simul.js');
-var search_coord = require('./search_coord.js');
+// var search_coord = require('./search_coord.js');
+var fileRead = require('./fileread.js');
+var apiProperties = require('./utils/apiProperties.js');
 
 module.exports = {
 
@@ -25,95 +27,14 @@ module.exports = {
 
 
         //echantillon de matrice
-        let matrix =
-        { "image": 
-            [ [ 698.4400024414062, 698.489990234375, 698.5399780273438 ],
-              [ 698.3800048828125, 698.4299926757812, 698.47998046875 ],
-              [ 698.3300170898438, 698.3800048828125, 698.4199829101562 ] ] };
+        // let matrix =
+        // { "image": 
+        //     [ [ 698.4400024414062, 698.489990234375, 698.5399780273438 ],
+        //       [ 698.3800048828125, 698.4299926757812, 698.47998046875 ],
+        //       [ 698.3300170898438, 698.3800048828125, 698.4199829101562 ] ] };
 
         const app = express();// instanciation de l'application express
 
-        //fonction du choix de l'unité et de l'algoritme
-        function valProperties(valQuery,valeurInseree,valeurDefaut){
-            if(valQuery == valeurInseree){
-                return valeurInseree;
-            }else{
-                return valeurDefaut;
-            }
-        }
-        
-        //creation d'une matrice d'indice en fonction de coordonnée
-		function coordToPointMatrix(x, y){
-			
-			let X_Y = search_coord.indiceCoord(x,y);
-			
-			let X_Y_hg = [X_Y[0] - 1, X_Y[1] - 1];
-			let X_Y_h = [X_Y[0], X_Y[1] - 1];
-			let X_Y_hd = [X_Y[0] + 1, X_Y[1] - 1];
-			
-			let X_Y_g = [X_Y[0] - 1, X_Y[1]];
-			let X_Y_d = [X_Y[0] + 1, X_Y[1]];
-			
-			let X_Y_bg = [X_Y[0] - 1, X_Y[1] + 1];
-			let X_Y_b = [X_Y[0], X_Y[1] + 1];
-			let X_Y_bd = [X_Y[0] + 1, X_Y[1] + 1];
-			
-			matrix = {
-				"image": [[X_Y_hg, X_Y_h, X_Y_hd]
-						 [X_Y_g, X_Y, X_Y_d]
-						 [X_Y_bg, X_Y_b ,X_Y_bd]]
-			};
-		}
-
-		//creation d'un json pour un point
-		function jsonPoint(U_latitude, U_longitude, U_unit, U_algo, U_proj){
-			let geometry = {
-				"latitude": U_latitude,
-				"longitude": U_longitude
-			};
-
-			let unite = valProperties(U_unit,'prc','deg');
-			let algo = valProperties(U_algo,'Horn','Zevenbergen and Thorne');
-			let proj = valProperties(U_proj,'4326','2154');   
-
-			let properties = {
-				"algoritm" : algo,
-				"unit" : unite,
-				"projection" : proj
-			};
-
-			let slope = 0;
-			let aspect = 0;
-			
-			let matrix_indice = coordToPointMatrix(U_latitude, U_longitude);
-
-			
-			//let matrix_altitude = indiceToAlti(point);  et a faire sur tout la matrix_altitude
-
-			//algoritmes de pente
-			if (algo == 'Zevenbergen and Thorne') {
-				slope = algoZAT.compute(matrix,10)['slope'];
-				aspect = algoZAT.compute(matrix,10)['aspect'];
-			}
-			else if (algo == 'Horn'){
-				slope = algoHorn.compute(matrix,10)['slope'];
-				aspect = algoHorn.compute(matrix,10)['aspect'];
-			}
-
-			// obtention des coordonnées images
-			let coord_img = search_coord.indiceCoord(Xparis,Yparis);
-			console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
-
-
-			res.json({
-				"geometry":geometry,
-				"properties":properties,
-				"slope":slope,
-				"aspect":aspect,
-				"matrix":matrix
-			})
-		}
-        
         // ################################ POLYLIGNE #####################################
         app.get("/polyligne",function (req,res){
 
@@ -174,8 +95,8 @@ module.exports = {
             // geometry['list length'] = length_list;
             // geometry['length'] = 0;
 
-            let unite = valProperties(req.query.unit,'prc','deg');
-            let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
+            let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
+            let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
 
             var properties = {
                 "algoritm" : algo,
@@ -314,9 +235,9 @@ module.exports = {
                 "longitude":longitude
             };
 
-            let unite = valProperties(req.query.unit,'prc','deg');
-            let algo = valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');
-            let proj = valProperties(req.query.proj,'4326','2154');   
+            let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
+            let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');
+            let proj = apiProperties.valProperties(req.query.proj,'4326','2154');   
 
             let properties = {
                 "algoritm" : algo,
@@ -326,6 +247,17 @@ module.exports = {
 
             let slope = 0;
             let aspect = 0;
+
+            // récupérer la matrice
+
+            // -- récupérer la tuile qui contient les données
+
+
+            // TEST DE LA FONCTION READTILE
+            fileRead.readTile("C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/7Y.tif",14);
+
+
+            // -- lire la tuile pour avoir la matrice 
 
             //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
@@ -426,7 +358,7 @@ module.exports = {
 			let x2 = coord_bd['lat'];
 			let y2 = coord_bd['lng'];
 			
-			let indice search_coord.indiceCoord(x,y);
+			let indice = search_coord.indiceCoord(x,y);
 
 			let liste_point = [];
 
@@ -441,16 +373,16 @@ module.exports = {
 			
 			
 			
-			let lst_json = jsonPoint(req.query.lng, req.query.lat, req.query.unit, req.query.proj);
+			let lst_json = apiProperties.jsonPoint(req.query.lng, req.query.lat, req.query.unit, req.query.proj);
 
 			
-			if(coord1 == undefined or coord2 == undefined){
+			if(coord1 == undefined || coord2 == undefined){
 				res.send("erreur: rentrer des coordonnées valides")
 			}
 
-		})
+		});
           
-        .listen(8080, function () {
+        app.listen(8080, function () {
             console.log('Listening on port 8080!');
             });
 

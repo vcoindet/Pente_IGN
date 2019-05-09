@@ -27,13 +27,31 @@
 		<img src= 'images/logo.png'>
 	</div>    
 	<h2><em>Bienvenue !</em><h2> 
-
+		<div id= 'choix'>
+			<h3><strong>Calcul de pente :</strong></h3>
+			<p><em> Choix de l'algorithme</em></p>
+			<label>Horn <input type='radio' name= 'algo' value='horn'id='alg1'></label>
+			<label> Zevenbergen et Thorne <input type='radio' name='algo' value='Zevenbergen_Thorne'id='alg2'></label>
+	
+			<p><em> Choix de l'unité</em></p>
+			<label>Degré <input type='radio' name= 'unit' value='deg'id='uni1'></label>
+			<label> Pourcentage <input type='radio' name='unit' value='prc'id='uni2'></label>
+	
+			<p><em> Choix de la projection</em></p>
+			<label>WGS 84<input type='radio' name= 'proj' value='3857'id='prj1'></label>
+			<label>Lambert 93<input type='radio' name='proj' value='2154'id='prj2'></label>
+			<script src="js/bouton.js" type="text/javascript"></script>
+		</div>
 	<div id="mapid">
 		<script src="js/carte.js" type="text/javascript"></script>
+		
 	</div>
+	
 
 	<div id= 'button'>
-		<label>Ligne<input type="checkbox" id ='checke' name ='hey'></label>
+			<label>Point<input type="radio" id ='pointe' name ='hey'></label>
+		<label>Ligne<input type="radio" id ='checke' name ='hey'></label>
+		<input type="submit" id ='erase' name ='supprimer'value='Supprimer élement de la carte'>
 		<script src="js/bouton.js" type="text/javascript"></script>
 	</div>
 

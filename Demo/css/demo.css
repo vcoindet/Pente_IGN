@@ -1,5 +1,7 @@
 #mapid {
-	height: 700px;
+	height: 500px;
+	width: 1200px;
+	
 } 
 
 h1 {
@@ -34,4 +36,18 @@ body {
 h2,h5{
 	font-family: Helvetica;
 }
+
+#choix{
+	font-family: 'Trebuchet';
+	font-size: 20px;
+	float : right;
+	left : 20px;
+	
+
+}
+h3{
+	font-family: 'Lato';
+	color: brown;
+}
+
       

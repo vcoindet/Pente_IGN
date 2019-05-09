@@ -172,7 +172,7 @@ module.exports = {
                 method:req.method
             });
 
-        })
+        });
 
         // ############################## POLYLIGNE (OLD) #############################
         app.get('/polyligne', function (req, res) {
@@ -219,26 +219,22 @@ module.exports = {
                 });
 			}
            
-          })
+          });
 
-        .get('/',function(req,res){
+        app.get('/',function(req,res){
             res.json({
                 message : "Bienvenue dans l'application PentIGN, Complêtez l'url pour accéder aux fonctionnalités",
                 method : req.method
             });
-        }) 
+        });
 
 
         // ################################ POINT ############################################
 
-        .get('/point',function(req,res){
-
-            //test avec les coordonnées de Paris
-            let Xparis = 652470.64;
-            let Yparis = 6862036.80;
+        app.get('/point',function(req,res){
 
             //query
-            let longitude = parseFloat(req.query.lng);
+            let longitude = parseFloat(req.query.lon);
             let latitude = parseFloat(req.query.lat);
 
             let geometry = {

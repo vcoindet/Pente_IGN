@@ -68,6 +68,8 @@ function searchIndiceCoord(x, y){
 	console.log(Ituile);
 	console.log(Jtuile);
 	
+	
+	
 	let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
 	let J_dalle = Math.floor(Jtuile / tilesPerHeight);//indice J de la dalle
 
@@ -283,9 +285,11 @@ function convert36(X, Y){
   * @return {string} chemin - chemin du tif de la tuile
   */
 function createParse(X, Y, level, format){
-	let chemin = "PYRAMIDE" + "/" + "IMAGE" + "/" + level + "/" + X[X.length - 3] + Y[Y.length - 3] + "/" + X[X.length - 2] + Y[Y.length - 2] + "/" + X[X.length - 1] + Y[Y.length - 1] + "." + format;
+	let chemin = "PYRAMIDE" + "/" + "IMAGE" + "/" + level + "/" + X[X.length - 3] + Y[Y.length - 3] + "/" + X[X.length - 2] + Y[Y.length - 2] + "/" + X[X.length - 1] + Y[Y.length - 1] + ".";
 
-	return chemin
+	chemin = chemin.toUpperCase();
+
+	return chemin + format;
 }
 
 /**
@@ -300,13 +304,17 @@ function createParse(X, Y, level, format){
   */
 function coordToindice(x, y, niveau, type){
 	//recherche de la dalle ou sont les coords
-	//let res = searchIndiceCoord(x, y);
+	let res = searchIndiceCoord(x, y);
 
-	//let Xdalle = res[0];
-	//let Ydalle = res[1];
+	let Xdalle = res[0];
+	let Ydalle = res[1];
+	
+	console.log(Xdalle);
+	console.log(Ydalle);
 
-	//console.log(Xdalle);
-	//console.log(Ydalle);
+	let tmp = convert36(Xdalle, Ydalle);
+	
+	console.log("chemin loic:" + createParse(tmp[0], tmp[1], "8", "tif"));
 	
 	let dalle = indiceDalle(x, y);
 	let coordTuile = indiceTuile(dalle[0], dalle[1]);
@@ -325,6 +333,9 @@ function coordToindice(x, y, niveau, type){
 
 var Xparis = 652470.64;
 var Yparis = 6862036.80;
+
+var Xforca = 822872.15;
+var Yforca = 6398954.09;
 //coord tuile de paris :
 //159
 //1252
@@ -332,9 +343,26 @@ var Yparis = 6862036.80;
 //223 247 min max de X
 //1327 1512 min max de Y
 console.log("coord paris : " + [Xparis, Yparis].toString());
-console.log(coordToindice(Xparis, Yparis, "8", "tif"));
+console.log(coordToindice(Xforca, Yforca, "8", "tif"));
 //console.log(convert36(225,1350));
-//console.log(indiceCoord(Xparis,Yparis));
+console.log(indiceCoord(Xparis,Yparis));
+
+
+let x_tuille = I_dalle * tilesPerWidth; //i tuille
+let x = (x_tuille * (resolution * TileW)) + X0	//x
+
+
+
+let realW = resolution * TileW;//largeur reelle d'une tuile
+let realH = resolution * TileH;//hauteur reelle d'une tuile
+
+let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
+let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
+
+
+let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
+let J_dalle = Math.floor(Jtuile / tilesPerHeight)
+
 
 module.exports = {
 

@@ -227,7 +227,7 @@ function indiceTuile(X, Y){
 	
 	let indice = [parseInt(colonne), parseInt(ligne)];
 	
-	console.log("coord tuile : " + indice.toString());
+	console.log("indice tuile : " + indice.toString());
 	return indice;
 }
 
@@ -268,6 +268,8 @@ function convert36(X, Y){
 	}
 	
 	let indice36 = [X, Y];//TileOffsets
+	
+	console.log("tuile base 36 :" + indice36.toString());
 	
 	return indice36;
 }
@@ -329,9 +331,10 @@ var Yparis = 6862036.80;
 
 //223 247 min max de X
 //1327 1512 min max de Y
+console.log("coord paris : " + [Xparis, Yparis].toString());
 console.log(coordToindice(Xparis, Yparis, "8", "tif"));
-console.log(convert36(225,1350));
-console.log(indiceCoord(Xparis,Yparis));
+//console.log(convert36(225,1350));
+//console.log(indiceCoord(Xparis,Yparis));
 
 module.exports = {
 

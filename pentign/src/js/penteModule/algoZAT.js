@@ -9,11 +9,11 @@ function zat_algoritm(image,taille_pixel){
     var i = 1
     var j = 1
 
-    var z = image['image'][i][j];
-    var Z2 = image['image'][i-1][j];
-    var Z4 = image['image'][i][j-1];
-    var Z6 = image['image'][i][j+1];
-    var Z8 = image['image'][i+1][j];
+    // var z = image['image'][i][j];
+    var Z2 = image[1];
+    var Z4 = image[3];
+    var Z6 = image[5];
+    var Z8 = image[7];
 
     var G = (-Z4+Z6)/(2*taille_pixel);
     var H = (Z2-Z8)/(2*taille_pixel);
@@ -27,25 +27,25 @@ function zat_algoritm(image,taille_pixel){
         };
 }
 
-var image = {
-    "image":[
-        [10,20,25],
-        [22,23,25],
-        [20,24,18]
-    ]
-};
+// var image = {
+//     "image":[
+//         [10,20,25],
+//         [22,23,25],
+//         [20,24,18]
+//     ]
+// };
 
-var image2 = {
-    "image":[
-        [1,45,3],
-        [30,2,30],
-        [1,10,3]
-    ]
-}
+// var image2 = {
+//     "image":[
+//         [1,45,3],
+//         [30,2,30],
+//         [1,10,3]
+//     ]
+// }
 
-console.log(image2);
+// console.log(image2);
 
-console.log( "pente:" + zat_algoritm(image2,10)["slope"]);
+// console.log( "pente:" + zat_algoritm(image2,10)["slope"]);
 
 module.exports = {
     compute : function(matrix,pixelSize){

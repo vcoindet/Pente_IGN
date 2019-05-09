@@ -1,5 +1,6 @@
 const algoZAT = require('../penteModule/algoZAT.js');
 const algoHorn = require('../penteModule/algoHorn.js');
+const search_coord = require('../search_coord.js');
 
 module.exports = {
 
@@ -14,8 +15,9 @@ module.exports = {
 
         //creation d'une matrice d'indice en fonction de coordonnée
         coordToPointMatrix : function (x,y) {
+            let matrix = new Array();
             let X_Y = search_coord.indiceCoord(x,y);
-			
+            
 			let X_Y_hg = [X_Y[0] - 1, X_Y[1] - 1];
 			let X_Y_h = [X_Y[0], X_Y[1] - 1];
 			let X_Y_hd = [X_Y[0] + 1, X_Y[1] - 1];
@@ -27,11 +29,9 @@ module.exports = {
 			let X_Y_b = [X_Y[0], X_Y[1] + 1];
 			let X_Y_bd = [X_Y[0] + 1, X_Y[1] + 1];
 			
-			let matrix = {
-				"image": [[X_Y_hg, X_Y_h, X_Y_hd]
-						 [X_Y_g, X_Y, X_Y_d]
-						 [X_Y_bg, X_Y_b ,X_Y_bd]]
-            };
+			matrix = [X_Y_hg, X_Y_h, X_Y_hd,
+						 X_Y_g, X_Y, X_Y_d,
+						 X_Y_bg, X_Y_b ,X_Y_bd];
             
             return matrix;
         },
@@ -81,12 +81,20 @@ module.exports = {
 				"geometry":geometry,
 				"properties":properties,
 				"slope":slope,
-				"aspect":aspect,
-				"matrix":matrix
+				"aspect":aspect
+				// "matrix":matrix
             };
 
             return outJSON;
             
+        },
+
+        indiceToAlti: function(matrixIndice,buffer) {
+            let matrix_alti = new Array();
+            for(let i = 0 ; i < matrixIndice.length ; i++){
+                matrix_alti[i] = buffer.readFloatLE(i*4);
+            }
+            return matrix_alti;
         }
 
     }

@@ -8,7 +8,7 @@ const algoHorn = require('./penteModule/algoHorn.js');
 var GeoTIFF = require('geotiff');
 var fs = require('fs');
 // var mnt_simul = require('./mnt_simul.js');
-// var search_coord = require('./search_coord.js');
+var search_coord = require('./search_coord.js');
 var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
 
@@ -71,13 +71,6 @@ module.exports = {
             let length_list = geometry['coord'].length;
             let length_polyline = 0;
 
-
-            // console.log(geometry['coord'].length);
-            
-            // geometry['coord'].forEach(element => {
-            //     length_list++;
-            // });
-
             //calcul du nombre de points et la longueur de la polyligne
             for(let i = 0; i < length_list-1 ;i++){
                 let l = (geometry['coord'][i+1][0] - geometry['coord'][i][0])**2;
@@ -87,13 +80,9 @@ module.exports = {
 
             
             // on détecte si le nombre de point par rapport à celui inséré est dépassé
-            // if(length_list > nb_max_point){
-            //     res.send("nombre de points autorisés dépassés");
-            // }
 
             //ajout dans le resultat JSON
-            // geometry['list length'] = length_list;
-            // geometry['length'] = 0;
+
 
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
             let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
@@ -224,7 +213,7 @@ module.exports = {
 
         // ################################ POINT ############################################
 
-        app.get('/point',function(req,res){
+        app.get('/point',async function(req,res){
 
             //query
             let longitude = parseFloat(req.query.lon);
@@ -253,25 +242,71 @@ module.exports = {
             // -- récupérer la tuile qui contient les données
 
 
-            // TEST DE LA FONCTION READTILE
-            fileRead.readTile("C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/7Y.tif",14);
+            try {
+                // lon = 940169.63
+                // lat = 6538433.65
+                //récupère la dalle à partir des coordonnées insérées dans l'url
+                let filePath = search_coord.coordToindice(longitude, latitude, "8", "tif");
+                filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                // console.log(filePath);
+                
+                // TEST DE LA FONCTION READTILE
+                const buffer = await fileRead.readTile(filePath,14);
+                // console.log(buffer);
+                let matrixIndice = apiProperties.coordToPointMatrix(longitude, latitude);
+                let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
+                console.log(matrixAlti);
+                // res.send('ok')
 
+                //algoritmes de pente
+            if (algo == 'Zevenbergen and Thorne') {
+                slope = algoZAT.compute(matrixAlti,10)['slope'];
+                aspect = algoZAT.compute(matrixAlti,10)['aspect'];
+            }
+            else if (algo == 'Horn'){
+                slope = algoHorn.compute(matrixAlti,10)['slope'];
+                aspect = algoHorn.compute(matrixAlti,10)['aspect'];
+            }
+
+            // conversion degré pourcent
+            if(unite == 'prc'){
+                slope = slope * 100 / 45;
+            }
+
+            console.log("pente : " + slope);
+            console.log("orientation : " + aspect);
+                
+            res.json({
+                "latitude":latitude,
+                "longitude":longitude,
+                properties,
+                "slope":slope,
+                "aspect":aspect
+            });
+
+            } catch (error) {
+                console.log(error);
+                
+            }
+            
+
+            
 
             // -- lire la tuile pour avoir la matrice 
 
             //algoritmes de pente
-            if (algo == 'Zevenbergen and Thorne') {
-                slope = algoZAT.compute(matrix,10)['slope'];
-                aspect = algoZAT.compute(matrix,10)['aspect'];
-            }
-            else if (algo == 'Horn'){
-                slope = algoHorn.compute(matrix,10)['slope'];
-                aspect = algoHorn.compute(matrix,10)['aspect'];
-            }
+            // if (algo == 'Zevenbergen and Thorne') {
+            //     slope = algoZAT.compute(matrix,10)['slope'];
+            //     aspect = algoZAT.compute(matrix,10)['aspect'];
+            // }
+            // else if (algo == 'Horn'){
+            //     slope = algoHorn.compute(matrix,10)['slope'];
+            //     aspect = algoHorn.compute(matrix,10)['aspect'];
+            // }
 
             // obtention des coordonnées images
-            let coord_img = search_coord.indiceCoord(Xparis,Yparis);
-            console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
+            // let coord_img = search_coord.indiceCoord(Xparis,Yparis);
+            // console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
 
             // repertoire image
             // let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
@@ -285,14 +320,15 @@ module.exports = {
             // var pixel_value = data[0][i + imageWidth * j];
             // let pente = 1;
             // json en sortie
-            res.json({
-                "geometry":geometry,
-                "properties":properties,
-                "slope":slope,
-                "aspect":aspect,
-                "matrix":matrix
+            // res.json({
+            //     "geometry":geometry,
+            //     "properties":properties,
+            //     "slope":slope,
+            //     "aspect":aspect,
+            //     "matrix":matrix
 
-            })
+            // })
+            // res.send('ok');
     
         })
 

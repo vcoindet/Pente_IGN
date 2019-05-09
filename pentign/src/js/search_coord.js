@@ -65,16 +65,16 @@ function searchIndiceCoord(x, y){
 	let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
 	let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
 	
-	console.log(Ituile);
-	console.log(Jtuile);
+	// console.log(Ituile);
+	// console.log(Jtuile);
 	
 	
 	
 	let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
 	let J_dalle = Math.floor(Jtuile / tilesPerHeight);//indice J de la dalle
 
-	console.log(I_dalle);
-	console.log(J_dalle); 
+	// console.log(I_dalle);
+	// console.log(J_dalle); 
 
 	let Xtuile = Ituile * realW;//coord du hg de la tuile concernée hg = haut gauche
 	let Ytuile = Y0 - (Jtuile * realH);//coord du hg de la tuile concernée hg = haut gauche
@@ -144,7 +144,7 @@ function indiceCoord(x, y){
 	//X gauche
 	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
 	let X_phase_hg = I_tms_hg * resolution;//coordonnée du pixel à gauche concerné
-	
+
 	//X droite
 	let I_tms_hd = Math.ceil((x - X0)) / resolution;//indice du pixel sur l'ensemble
 	let X_phase_hd = I_tms_hd * resolution;//coordonnée du pixel à droite concerné
@@ -156,7 +156,6 @@ function indiceCoord(x, y){
 	//Y bas
 	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
 	let Y_phase_bg = J_tms_bg * resolution;//coordonnée du pixel en bas concerné
-
 
 	if(Math.abs(X_phase_hd - x) < Math.abs(x - X_phase_hg)){
 		X_phase_final = X_phase_hd;//coord X le plus proche
@@ -210,7 +209,7 @@ function indiceDalle(X, Y){
 	
 	coordDalle = [Xdalle, Ydalle];
 	
-	console.log("coord dalle : " + coordDalle.toString());
+	// console.log("coord dalle : " + coordDalle.toString());
 	return coordDalle;
 }
 
@@ -229,7 +228,7 @@ function indiceTuile(X, Y){
 	
 	let indice = [parseInt(colonne), parseInt(ligne)];
 	
-	console.log("indice tuile : " + indice.toString());
+	// console.log("indice tuile : " + indice.toString());
 	return indice;
 }
 
@@ -271,7 +270,7 @@ function convert36(X, Y){
 	
 	let indice36 = [X, Y];//TileOffsets
 	
-	console.log("tuile base 36 :" + indice36.toString());
+	// console.log("tuile base 36 :" + indice36.toString());
 	
 	return indice36;
 }
@@ -309,8 +308,8 @@ function coordToindice(x, y, niveau, type){
 	let Xdalle = res[0];
 	let Ydalle = res[1];
 
-	console.log(Xdalle);
-	console.log(Ydalle);
+	// console.log(Xdalle);
+	// console.log(Ydalle);
 
 	let tmp = convert36(Xdalle, Ydalle);
 
@@ -349,10 +348,10 @@ function coordToindice(x, y, niveau, type){
 
 //223 247 min max de X
 //1327 1512 min max de Y
-console.log("coord paris : " + [Xparis, Yparis].toString());
-console.log(coordToindice(Xannecy, Yannecy, "8", "tif"));
-//console.log(convert36(225,1350));
-console.log(indiceCoord(Xparis,Yparis));
+// console.log("coord paris : " + [Xparis, Yparis].toString());
+// console.log(coordToindice(Xannecy, Yannecy, "8", "tif"));
+// //console.log(convert36(225,1350));
+// console.log(indiceCoord(Xparis,Yparis));
 
 /*
 let coordXtuile = 230 * tilesPerWidth; //i tuille

@@ -44,15 +44,24 @@ module.exports = {
         // lecture de la tuile
         fs.readSync(fd,buffer3,0,taille_tuile,pos_tuile);
 
+
         //décompression et obtention des valeurs z
-        zlib.inflate(buffer3, (err, buffer) => {
-            let i = 0;
-            while (i <= buffer.length-4) {
-                var alti = buffer.readFloatLE(i);
-                console.log("i: "+i + " alti: "+alti);
-                i=i+4;
-            }
+        return new Promise ( (resolve, reject) => {
+                zlib.inflate(buffer3, (err, buffer) => {
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(buffer);
+                }
+                // let i = 0;
+                // while (i <= buffer.length-4) {
+                //     var alti = buffer.readFloatLE(i);
+                //     // console.log("i: "+i + " alti: "+alti);
+                //     i=i+4;
+                // }
+            });
         });
+        
     
     }
 

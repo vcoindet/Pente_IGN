@@ -42,6 +42,78 @@ module.exports = {
             }
         }
         
+        //creation d'une matrice d'indice en fonction de coordonnée
+		function coordToPointMatrix(x, y){
+			
+			let X_Y = search_coord.indiceCoord(x,y);
+			
+			let X_Y_hg = [X_Y[0] - 1, X_Y[1] - 1];
+			let X_Y_h = [X_Y[0], X_Y[1] - 1];
+			let X_Y_hd = [X_Y[0] + 1, X_Y[1] - 1];
+			
+			let X_Y_g = [X_Y[0] - 1, X_Y[1]];
+			let X_Y_d = [X_Y[0] + 1, X_Y[1]];
+			
+			let X_Y_bg = [X_Y[0] - 1, X_Y[1] + 1];
+			let X_Y_b = [X_Y[0], X_Y[1] + 1];
+			let X_Y_bd = [X_Y[0] + 1, X_Y[1] + 1];
+			
+			matrix = {
+				"image": [[X_Y_hg, X_Y_h, X_Y_hd]
+						 [X_Y_g, X_Y, X_Y_d]
+						 [X_Y_bg, X_Y_b ,X_Y_bd]]
+			};
+		}
+
+		//creation d'un json pour un point
+		function jsonPoint(U_latitude, U_longitude, U_unit, U_algo, U_proj){
+			let geometry = {
+				"latitude": U_latitude,
+				"longitude": U_longitude
+			};
+
+			let unite = valProperties(U_unit,'prc','deg');
+			let algo = valProperties(U_algo,'Horn','Zevenbergen and Thorne');
+			let proj = valProperties(U_proj,'4326','2154');   
+
+			let properties = {
+				"algoritm" : algo,
+				"unit" : unite,
+				"projection" : proj
+			};
+
+			let slope = 0;
+			let aspect = 0;
+			
+			let matrix_indice = coordToPointMatrix(U_latitude, U_longitude);
+
+			
+			//let matrix_altitude = indiceToAlti(point);  et a faire sur tout la matrix_altitude
+
+			//algoritmes de pente
+			if (algo == 'Zevenbergen and Thorne') {
+				slope = algoZAT.compute(matrix,10)['slope'];
+				aspect = algoZAT.compute(matrix,10)['aspect'];
+			}
+			else if (algo == 'Horn'){
+				slope = algoHorn.compute(matrix,10)['slope'];
+				aspect = algoHorn.compute(matrix,10)['aspect'];
+			}
+
+			// obtention des coordonnées images
+			let coord_img = search_coord.indiceCoord(Xparis,Yparis);
+			console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
+
+
+			res.json({
+				"geometry":geometry,
+				"properties":properties,
+				"slope":slope,
+				"aspect":aspect,
+				"matrix":matrix
+			})
+		}
+        
         // ################################ POLYLIGNE #####################################
         app.get("/polyligne",function (req,res){
 
@@ -342,6 +414,45 @@ module.exports = {
                 properties
             })
         })
+        
+        .get('/bunding', function(){
+			// /bunding?coord1={'x'=12, 'y'=23}&coord2={'x'=16, 'y'=40}
+			
+			//coord hg de l'utilisateur
+			let coord = JSON.parse(req.query.coord1);
+			let x1 = coord_hg['lat'];
+			let y1 = coord_hg['lng'];
+			
+			
+			//coord bd de l'utilisateur
+			let coord_bd = JSON.parse(req.query.coord1);
+			
+			let x2 = coord_bd['lat'];
+			let y2 = coord_bd['lng'];
+			
+			let indice search_coord.indiceCoord(x,y);
+
+			let liste_point = [];
+
+			let largeur = x2 - x1;
+			let longeur = y2 - y1;
+
+			for(let i = 0; i < largeur; i++){
+				for(let j = 0; j < longeur; i++){
+					liste_point[i] = [x1 + j, y1 + i];
+				}
+			}
+			
+			
+			
+			let lst_json = jsonPoint(req.query.lng, req.query.lat, req.query.unit, req.query.proj);
+
+			
+			if(coord1 == undefined or coord2 == undefined){
+				res.send("erreur: rentrer des coordonnées valides")
+			}
+
+		})
           
         .listen(8080, function () {
             console.log('Listening on port 8080!');

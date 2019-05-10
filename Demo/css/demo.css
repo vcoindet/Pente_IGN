@@ -2,6 +2,7 @@
 	height: 500px;
 	width: 1200px;
 	
+	
 } 
 
 h1 {
@@ -26,6 +27,7 @@ img {
 
 body {
 	background-color :rgb(232, 245, 231);
+	width : 100%;
 }
 
 #ola {
@@ -42,6 +44,8 @@ h2,h5{
 	font-size: 20px;
 	float : right;
 	left : 20px;
+	position : right;
+	
 	
 
 }
@@ -50,4 +54,10 @@ h3{
 	color: brown;
 }
 
+#erase{
+	background-color: mediumseagreen;
+	border-radius: 20px;
+	color: white;
+	
+}
       

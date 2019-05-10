@@ -17,7 +17,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 	<script data-key="keal590caiyuc4ei9ilrc0qd" src="js/GpPluginLeaflet.js"></script>
 	<script src="js/Control.OSMGeocoder.js" type="text/javascript"></script>
-   
+	
       
     <title>Pent'IGN</title>
 </head>
@@ -27,33 +27,33 @@
 		<img src= 'images/logo.png'>
 	</div>    
 	<h2><em>Bienvenue !</em><h2> 
+		<div class= 'position'>
 		<div id= 'choix'>
 			<h3><strong>Calcul de pente :</strong></h3>
 			
 			<p><em> Choix de l'algorithme</em></p>
-			<label>Horn<input type='radio' name= 'algo' value='horn'id='alg1'></label>
-			<label>Zevenbergen et Thorne<input type='radio' name='algo' value='Zevenbergen_Thorne'id='alg2'></label>
+			<label>Horn<input type='radio' name= 'algo' value='Horn'id='alg1'checked></label>
+			<label>Zevenbergen et Thorne<input type='radio' name='algo' value='Zevenbergen and Thorne'id='alg2' ></label>
 	
 			<p><em> Choix de l'unité</em></p>
 			<label>Degré<input type='radio' name= 'unit' value='deg'id='uni1'></label>
-			<label> Pourcentage<input type='radio' name='unit' value='prc'id='uni2'></label>
+			<label> Pourcentage<input type='radio' name='unit' value='prc'id='uni2'checked></label>
 	
 			<p><em> Choix de la projection</em></p>
-			<label>WGS 84<input type='radio' name= 'proj' value='3857'id='prj1'></label>
+			<label>WGS 84<input type='radio' name= 'proj' value='4326'id='prj1'checked></label>
 			<label>Lambert 93<input type='radio' name='proj' value='2154'id='prj2'></label>
-			<script src="js/bouton.js" type="text/javascript"></script>
+			<!-- <script src="js/bouton.js" type="text/javascript"></script> -->
 		</div>
 	<div id="mapid">
-		<script src="js/carte.js" type="text/javascript"></script>
 		
 	</div>
-	
+	</div>
 
 	<div id= 'button'>
-			<label>Point<input type="radio" id ='pointe' name ='hey'></label>
+			<label>Point<input type="radio" id ='pointe' name ='hey'checked></label>
 		<label>Ligne<input type="radio" id ='checke' name ='hey'></label>
 		<input type="submit" id ='erase' name ='supprimer'value='Supprimer élement de la carte'>
-		<script src="js/bouton.js" type="text/javascript"></script>
+		<!-- <script src="js/bouton.js" type="text/javascript"></script> -->
 	</div>
 
 	<div id = "footer"> 
@@ -63,4 +63,5 @@
 		<img src = 'https://static.data.gouv.fr/avatars/1b/e4985396724faf9f6e1122baa7b65c.gif'>
 	</div>
 </body>
+<script src="js/carte.js" type="text/javascript"></script>
 </html>

@@ -1,6 +1,6 @@
 
 const express = require('express');
-// const cors = require('cors'); //util pour les autorisation
+const cors = require('cors'); //util pour les autorisation
 
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
@@ -13,6 +13,9 @@ var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
 var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
 var L93_to_WGS84 = require('./utils/L93_to_WGS84');
+
+var config = require('../config/template.json');
+var chemin_pyr = config["application"]["pyramide"];
 
 module.exports = {
 
@@ -29,7 +32,7 @@ module.exports = {
 
 
         const app = express();// instanciation de l'application express
-
+        app.use(cors());
         // ################################ POLYLIGNE #####################################
         app.get("/polyligne",function (req,res){
 
@@ -236,7 +239,7 @@ module.exports = {
             try {
                 // récupère la dalle à partir des coordonnées insérées dans l'url
                 let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
-                filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                filePath = chemin_pyr + filePath;
 
                 // numero de la tuile ou récupérer la valeur de pente
                 let numTuile = search_coord.numTuile(inLongitude,inLatitude);         
@@ -271,12 +274,12 @@ module.exports = {
                 
                 //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
-                slope = algoZAT.compute(matrixAlti,10)['slope'];
-                aspect = algoZAT.compute(matrixAlti,10)['aspect'];
+                slope = algoZAT.compute(matrixAlti,1)['slope'];
+                aspect = algoZAT.compute(matrixAlti,1)['aspect'];
             }
             else if (algo == 'Horn'){
-                slope = algoHorn.compute(matrixAlti,10)['slope'];
-                aspect = algoHorn.compute(matrixAlti,10)['aspect'];
+                slope = algoHorn.compute(matrixAlti,1)['slope'];
+                aspect = algoHorn.compute(matrixAlti,1)['aspect'];
             }
 
             // conversion degré pourcent
@@ -372,8 +375,8 @@ module.exports = {
 
 			for(let i = 0; i < liste_point.length; i++){
 				liste_point[i] = liste_point[i].split(",");
-				liste_point[i][0] = parseInt(liste_point[i][0], 10);
-				liste_point[i][1] = parseInt(liste_point[i][1], 10);
+				liste_point[i][0] = parseFloat(liste_point[i][0], 10);
+				liste_point[i][1] = parseFloat(liste_point[i][1], 10);
 			}
 
 			//liste_point = [[1,2], [3, 3]]

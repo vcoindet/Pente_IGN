@@ -21,8 +21,19 @@ function zat_algoritm(image,taille_pixel){
     var slope = Math.sqrt(G**2 + H**2)
 
     var slope_angle = Math.atan(slope) * 180 / Math.PI;
+    
     var aspect = Math.atan(H/G) * 180 / Math.PI;
-
+	
+	if(aspect < 0){
+			aspect = 90.0 - aspect;
+		}
+	else if(aspect > 90.0){
+		aspect = 360.0 - aspect + 90.0;
+	}
+	else{
+		aspect = 90.0 - aspect;
+	}
+	
     return {"slope":slope_angle,
             "aspect":aspect
         };

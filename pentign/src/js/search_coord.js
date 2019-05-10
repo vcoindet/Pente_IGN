@@ -259,9 +259,7 @@ function numTuile(X, Y){
 	
 	
 	let resTuile = i + (j * tilesPerWidth);
-	
 
-	
 	return resTuile;
 }
 
@@ -426,4 +424,5 @@ module.exports = {
 	numTuile : function(x, y){
 		return numTuile(x, y);
 	}
+	
 }

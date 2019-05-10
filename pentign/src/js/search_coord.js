@@ -410,7 +410,7 @@ module.exports = {
 
 	coordToindice : function(x, y, niveau, type){
 		return coordToindice(x, y, niveau, type);
-	}
+	},
 
 	numTuile : function(x, y){
 		return numTuile(x, y);

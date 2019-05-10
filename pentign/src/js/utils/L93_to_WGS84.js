@@ -17,9 +17,14 @@ function Lambert93toWgs84(x,y) {
     
     let longitude = (gamma / b16 + 3 / 180 * Math.PI) / Math.PI * 180;
     let latitude = Math.asin(sinphiit) / Math.PI * 180;
+
 	return [longitude, latitude];
 }
 
-
+module.exports = {
+    transform : function (x,y) {
+        return Lambert93toWgs84(x,y);
+    }
+}
 
 

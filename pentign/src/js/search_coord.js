@@ -418,10 +418,10 @@ function coordToindice(x, y, niveau, type){
 //var Xparis = 652470.64;
 //var Yparis = 6862036.80;
 
-var Xannecy = 940169.63;
-var Yannecy = 6538433.65;
+//àvar Xannecy = 940169.63;
+//var Yannecy = 6538433.65;
 
-console.log(indiceCoord(Xannecy, Yannecy));
+//console.log(indiceCoord(Xannecy, Yannecy));
 
 //coord tuile de paris :
 //159

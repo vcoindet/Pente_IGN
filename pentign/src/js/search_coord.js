@@ -150,22 +150,61 @@ function indiceCoord(x, y){
 
 	//X gauche
 	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
+
+	//permet de ne pas prendre les coordonnées en bordure
+	if(I_tms_hg >= 256){
+		I_tms_hg = I_tms_hg - resolution;
+	}
+	
+	if(I_tms_hg <= 0){
+		I_tms_hg = I_tms_hg + resolution;
+	}
+	
 	let X_phase_hg = I_tms_hg * resolution;//coordonnée du pixel à gauche concerné
 
 	//X droite
 	let I_tms_hd = Math.ceil((x - X0)) / resolution;//indice du pixel sur l'ensemble
+
+	//permet de ne pas prendre les coordonnées en bordure
+	if(I_tms_hd >= 256){
+		I_tms_hd = I_tms_hd - resolution;
+	}
+	
+	if(I_tms_hd <= 0){
+		I_tms_hd = I_tms_hd + resolution;
+	}
+
 	let X_phase_hd = I_tms_hd * resolution;//coordonnée du pixel à droite concerné
 	
 	//Y haut
 	let J_tms_hg = Math.floor((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
-	
+
+	//permet de ne pas prendre les coordonnées en bordure
+	if(J_tms_hg >= 256){
+		J_tms_hg = J_tms_hg - resolution;
+	}
+
+	if(J_tms_hg <= 0){
+		J_tms_hg = J_tms_hg + resolution;
+	}
+
+
 	let Y_phase_hg = Math.floor(Y0 - (J_tms_hg * resolution));//coordonnée du pixel en haut concerné
 
 	//Y bas
 	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
+
+	//permet de ne pas prendre les coordonnées en bordure
+	if(J_tms_bg >= 256){
+		J_tms_bg = J_tms_bg - resolution;
+	}
+
+	if(J_tms_bg <= 0){
+		J_tms_bg = J_tms_bg + resolution;
+	}
+
 	let Y_phase_bg = Math.ceil(Y0 - (J_tms_bg * resolution));//coordonnée du pixel en bas concerné
-	
-	console.log(J_tms_bg);
+
 
 	if(Math.abs(X_phase_hd - x) < Math.abs(x - X_phase_hg)){
 		X_phase_final = X_phase_hd;//coord X le plus proche

@@ -247,12 +247,22 @@ function indiceTuile(X, Y){
   * @return {lst[int]} numtuile - numéro de la tuile
   */
 function numTuile(X, Y){
-	let i = Math.floor(X % 16);
-	let j = Math.floor(Y % 16);
 
-	numTuile = i + (j * tilesPerWidth);
+	let realW = resolution * TileW;//largeur reelle d'une tuile
+	let realH = resolution * TileH;//hauteur reelle d'une tuile
 
-	return numTuile;
+	let Ituile = Math.floor((X - X0) / realW);//indice I de la tuile dans le tms
+	let Jtuile = Math.floor((Y0 - Y) / realH);//indice J de la tuile dans le tms
+	
+	let i = Math.floor(Ituile % 16);
+	let j = Math.floor(Jtuile % 16);
+	
+	
+	let resTuile = i + (j * tilesPerWidth);
+	
+
+	
+	return resTuile;
 }
 
 /**
@@ -401,6 +411,7 @@ y = -((jtuile * realH) - YO)
 let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
 let J_dalle = Math.floor(Jtuile / tilesPerHeight)
 */
+
 
 module.exports = {
 

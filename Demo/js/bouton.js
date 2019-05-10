@@ -21,6 +21,7 @@ var theMarker ={};
   * @name create_point
   * @description Créé un marqueur à chaque click sur la carte et 
 	* renvoie sous forme de Popup la latitude et la longitude
+	* @param  e - 
   */
 function create_point(){
 	mymap.on('click',function (e){
@@ -42,9 +43,8 @@ function create_point(){
 
 		//Appelle le web service 
 		donnee = web_service(coord["lat"], coord["lng"]);
-		//pente = donnee["pente"];
-		
-		theMarker.bindPopup('' + coord + "\n" + "pente = ").openPopup();
+		console.log(donnee);		
+		theMarker.bindPopup('' + coord + "<br>" + "pente = ").openPopup();
 	});
 }
 /**
@@ -52,6 +52,7 @@ function create_point(){
   * @name create_ligne
   * @description Créé des lignes entre plusieurs marqueurs et renvoie
 	*  pour chaque marqueur sous forme de Popup la latitude et la longitude
+	* @param  e - Event de leaflet
   */
 function create_ligne(){
 	mymap.on('click',function (e){
@@ -96,7 +97,13 @@ function clear (){
 
 elem_map.addEventListener("click", chose_geom);
 effacer.addEventListener("click",clear);
-
+/**
+  * @function
+  * @name algo
+  * @description Récupère la valeur du bouton radio coché 
+	* pour le choix de l'algorithme de calcul de pente
+  * @return {string} algs - renvoie la valeur en fonction du bouton coché 
+  */
 function algo(){
 	let algs;
 	if (document.getElementById('alg1').checked) {
@@ -108,7 +115,13 @@ function algo(){
 	}
 	return algs;
 }
-
+/**
+  * @function
+  * @name uni
+  * @description Récupère la valeur du bouton radio coché
+	*  pour le choix de l'unité voulu du calcul de pente
+		@return {string} united- renvoie la valeur en fonction du bouton coché 
+  */
 function uni(){
 	let united;
 	if (document.getElementById('uni1').checked) {
@@ -120,7 +133,14 @@ function uni(){
 	}
 	return united
 }
+/**
+  * @function
+  * @name project
+  * @description Récupère la valeur du bouton radio coché
+	*  pour le choix de la projection 
+	@return {string} proj - renvoie la valeur en fonction du bouton coché 
 
+  */
 function project(){
 	let proj;
 	if (document.getElementById('prj1').checked) {
@@ -133,14 +153,25 @@ function project(){
 	
 	return proj;
 }
-
+/**
+  * @function
+  * @name web_service
+  * @description Appelle le service web de calcul de pente Pent'IGN pour un point 
+	* et renvoie sous forme de JSON le calcul de pente 
+		@param  lat - latitude du point de la	carte
+		@param  lng - longitude du point de la carte
+		@return {string} -JSON du calcul de pente 
+  */
 function web_service(lat, lng){
-	let data = "lat=" + lat + "&lng=" + lng + "&algo="+algo()+"&unit="+uni()+"&proj="+project();
+	let data = "lat=" + lat + "&lon=" + lng + "&algo="+algo()+"&unit="+uni()+"&proj="+project();
 	let ajax = new XMLHttpRequest();
 	ajax.open('GET','http://localhost:8080/point');
 	ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	ajax.responseType = "json";
 	ajax.send(data);
+	console.log(data);
+	console.log(ajax.response);
+	
 	return ajax.response;
 }		
 

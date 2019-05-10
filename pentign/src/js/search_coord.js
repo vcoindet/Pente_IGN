@@ -43,8 +43,8 @@ var TileW = 256; //taille de la tuile
 var TileH = 256;
 var MatrixW = 4000; //nombre de pixel en longeur
 var MatrixH = 23000; // nombre de pixel largeur
-var tilesPerWidth = 16; //nb de tuile dans la hauteur de la dalle
-var tilesPerHeight = 16;
+var tilesPerWidth = 16; //nb de tuile dans la largeur de la dalle
+var tilesPerHeight = 16; //nb de tuile dans la hauteur de la dalle
 var pathDepth = 2; //profondeur arborescence
 
  /**
@@ -64,12 +64,10 @@ function searchIndiceCoord(x, y){
 
 	let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
 	let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
-	
+
 	// console.log(Ituile);
 	// console.log(Jtuile);
-	
-	
-	
+
 	let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
 	let J_dalle = Math.floor(Jtuile / tilesPerHeight);//indice J de la dalle
 
@@ -106,7 +104,7 @@ function searchIndiceCoord(x, y){
 		X_phase_final = X_phase_hg;//coord X le plus proche
 		I_phase_final = I_tms_hg;
 	}
-	
+
 	if(Math.abs(Y_phase_hg - y) < Math.abs(y - Y_phase_bg)){
 		Y_phase_final = Y_phase_hg;//coord Y le plus proche
 		J_phase_final = J_tms_hg;
@@ -230,6 +228,24 @@ function indiceTuile(X, Y){
 	
 	// console.log("indice tuile : " + indice.toString());
 	return indice;
+}
+
+ /**
+  * @function
+  * @name numTuile
+  * @description Renvoie le numéro de tuile 
+  * en fonction de coordonée géographique
+  * @param {int} X - latitude en lambert 93
+  * @param {int} Y - longitude en lambert 93
+  * @return {lst[int]} numtuile - numéro de la tuile
+  */
+function numTuile(X, Y){
+	let i = Math.floor(X % 16);
+	let j = Math.floor(Y % 16);
+
+	numTuile = i + (j * tilesPerWidth);
+
+	return numTuile;
 }
 
 /**
@@ -384,8 +400,12 @@ module.exports = {
 	indiceCoord : function(x,y){
 		return indiceCoord(x,y);
 	},
-	
+
 	coordToindice : function(x, y, niveau, type){
 		return coordToindice(x, y, niveau, type);
+	}
+
+	numTuile : function(x, y){
+		return numTuile(X, Y);
 	}
 }

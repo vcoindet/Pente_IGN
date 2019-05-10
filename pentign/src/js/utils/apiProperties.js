@@ -15,9 +15,9 @@ module.exports = {
 
         //creation d'une matrice d'indice en fonction de coordonnée
         coordToPointMatrix : function (x,y) {
-            let matrix = new Array();
-            let X_Y = search_coord.indiceCoord(x,y);
-            
+			let matrix = new Array();
+			let X_Y = search_coord.indiceCoord(x,y)["indice_point"];
+
 			let X_Y_hg = [X_Y[0] - 1, X_Y[1] - 1];
 			let X_Y_h = [X_Y[0], X_Y[1] - 1];
 			let X_Y_hd = [X_Y[0] + 1, X_Y[1] - 1];
@@ -88,12 +88,27 @@ module.exports = {
             
         },
 
+		// on passe de l'indice de l'image en altitude récupérée à partir de la tuile lue
         indiceToAlti: function(matrixIndice,buffer) {
             let matrix_alti = new Array();
             for(let i = 0 ; i < matrixIndice.length ; i++){
                 matrix_alti[i] = buffer.readFloatLE(i*4);
             }
             return matrix_alti;
-        }
-
+		},
+		
+		//matrice de coordonnées autour d'un point
+		coordinateMatrix : function (x,y,ecart) {
+			let matrix = new Array();
+			matrix.push(search_coord.indiceCoord(x-1,y+1)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x,y+1)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x+1,y+1)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x-1,y)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x,y)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x+1,y)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x-1,y-1)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x,y-1)['coord_point'])
+			matrix.push(search_coord.indiceCoord(x+1,y-1)['coord_point'])
+			return matrix;
+		}
     }

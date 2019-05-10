@@ -11,7 +11,8 @@ var fs = require('fs');
 var search_coord = require('./search_coord.js');
 var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
-var WGS84_to_L93 = require('./utils/WGS84_to_L93.js')
+var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
+var L93_to_WGS84 = require('./utils/L93_to_WGS84');
 
 module.exports = {
 
@@ -226,7 +227,8 @@ module.exports = {
             let proj = apiProperties.valProperties(req.query.proj,'2154','4326');   
 
             //conversion des coordonnées dans la bonne projection
-            let coord_l93 = new Array(); 
+            let coord_l93 = new Array();
+
             if(proj == "4326"){
                 coord_l93 = WGS84_to_L93.transform(U_Longitude,U_Latitude);
                 inLongitude = coord_l93[0];
@@ -255,9 +257,44 @@ module.exports = {
                 const buffer = await fileRead.readTile(filePath,numTuile);
                 let matrixIndice = apiProperties.coordToPointMatrix(inLongitude, inLatitude);
                 let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
-                console.log(matrixAlti);
-                // res.send('ok')
 
+                //coordonnées ou l'altitude est calculée (point le plus proche du point renseigné)
+                let calculate_geometry = search_coord.indiceCoord(inLongitude,inLatitude)['coord_point'];
+
+                console.log(calculate_geometry);
+
+                //création de la matrice de coordonnées où la pente a été calculée
+                let calculate_geometry_matrix = apiProperties.coordinateMatrix(inLongitude,inLatitude);
+                
+                //reconversion des coordonnées en WGS83
+                if(proj == "4326"){
+                    calculate_geometry = L93_to_WGS84.transform(calculate_geometry[0],calculate_geometry[1]);
+
+                    for(let i = 0 ; i < calculate_geometry_matrix.length ; i++){
+                        let lon = calculate_geometry_matrix[i][0];
+                        let lat = calculate_geometry_matrix[i][1];
+                        console.log(lon);
+                        console.log(lat);
+                        
+                        calculate_geometry_matrix[i] = L93_to_WGS84.transform(lon,lat);
+
+                    }
+
+                } else{
+
+                }
+
+                
+                
+
+                // console.log("indice coord : " + search_coord.indiceCoord(inLongitude,inLatitude)['coord_point']);
+
+                // let X_Y = search_coord.indiceCoord(x,y)["coord_point"]
+                // console.log(X_Y);
+                
+                // res.send('ok')
+                // console.log();
+                
                 //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
                 slope = algoZAT.compute(matrixAlti,10)['slope'];
@@ -276,23 +313,28 @@ module.exports = {
             console.log("pente : " + slope);
             console.log("orientation : " + aspect);
 
-            let input_geometry = {
-                "latitude":U_Latitude,
-                "longitude":U_Longitude
-            };
-
-            let properties = {
-                "algoritm" : algo,
-                "unit" : unite,
-                "projection" : proj
-            };
-                
             res.json({
-                input_geometry,
-                "altitude":matrixAlti[4],
-                properties,
-                "slope":slope,
-                "aspect":aspect
+                //coordonnée du point choisi
+                "geometry_input":{
+                    "latitude":U_Latitude,
+                    "longitude":U_Longitude
+                },
+                "geometry_calculate":{
+                    "latitude":calculate_geometry[1],
+                    "longitude":calculate_geometry[0]
+                },
+                "altitude" : matrixAlti[4],
+                //ajout coordonnée point final
+                "properties":{
+                    "algoritm" : algo,
+                    "unit" : unite,
+                    "projection" : proj
+                },
+                "slope" : slope,
+                "aspect" : aspect,
+                "matrix_calculate":matrixAlti,
+                "matrix_calculate_geometry":calculate_geometry_matrix
+                //ajout matrice de calcul avec alti et coordonnées des pixels
             });
 
             } catch (error) {

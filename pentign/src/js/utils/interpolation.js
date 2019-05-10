@@ -28,19 +28,14 @@ function coeff_droite(x1, y1, x2, y2){
   * @return {lst[int]} indice - Renvoie l'interpolation y d'un point
   */
 function interpollation_y(x1, y1, x2, y2, xi){
-<<<<<<< HEAD
 	let yi = y1 + ((y2 - y1) * ((xi - x1) / (x2 - x1)));
-=======
-	let yi = y1+ (y2-y1) * ((xi - x1) / (x2 - x1));
-
->>>>>>> 88ef8f7ee7bdd4153ce92ef496288d21ec8c5c0d
 	return yi;
 }
 
 
  /**
   * @function
-  * @name liste_point
+  * @name interpollation_point
   * @description Renvoie une liste 
   * @param {int} x1 - coord en lambert 93
   * @param {int} y1 - coord en lambert 93
@@ -58,43 +53,37 @@ function liste_point(x1, y1, x2, y2, nb_point){
 	let diff = Math.abs(x2 - x1);
 	let pas = Math.floor(diff / nb_point);
 	
-	let liste_point = [];
+	let liste_point = new Array();
 	let new_x;
 	let new_y;
 	let xmin;
 	let xmax;
-	let ymin;
-	let ymax;
 	
 	if(x1 < x2){
 		xmin = x1;
 		xmax = x2;
-		ymin = y1;
-		ymax = y2;
 	}
 	else{
 		xmin = x2;
 		xmax = x1;
-		ymin = y2;
-		ymax = y1;
 	}
 	
-	liste_point.push([xmin, ymin]);
+	liste_point.push(xmin);
 
-	for(let i = pas; i < diff; i = i + pas){
-		console.log(i);
+	for(let i = pas; i < diff;i =  i + pas){
 		new_x = xmin + i;
 		new_y = interpollation_y(x1, y1, x2, y2, new_x);
 		liste_point.push([new_x, new_y]);
 	}
 
-	liste_point.push([xmax, ymax]);
+	liste_point.push(xmax);
 
 	return liste_point;
 }
 
+module.exports = {
+	liste_point:function (x1, y1, x2, y2, nb_point) {
+		return liste_point(x1, y1, x2, y2, nb_point);
+	}
 
-
-console.log(liste_point(1,1,10,10,4));
-
-
+}

@@ -18,10 +18,19 @@ function horn_algoritm(mat, taille_pixel){
 	// console.log(E_W);
 	// console.log(N_S);
 
-	let pente =  (Math.sqrt(E_W ** 2 + N_S ** 2) * (180 / Math.PI));
+	let pente =  Math.atan((Math.sqrt(E_W ** 2 + N_S ** 2))  * (180 / Math.PI));
 	
 	if(N_S != 0){
-		orientation = (Math.atan(E_W / N_S) * (180 / Math.PI)) + 180;
+		orientation = (Math.atan(E_W / N_S) * (180 / Math.PI));
+		if(orientation < 0){
+			orientation = 90.0 - orientation 
+		}
+		else if(orientation > 90.0){
+			orientation = 360.0 - orientation + 90.0
+		}
+		else{
+			orientation = 90.0 - orientation
+		}
 	}
 	else{
 		orientation = -1;

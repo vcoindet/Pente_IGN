@@ -13,6 +13,7 @@ var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
 var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
 var L93_to_WGS84 = require('./utils/L93_to_WGS84');
+var interpolation = require('./utils/interpolation.js');
 
 var config = require('../config/template.json');
 var chemin_pyr = config["application"]["pyramide"];
@@ -79,9 +80,10 @@ module.exports = {
             // let coef_dir = (geometry[1][1]-geometry[0][1]) / (geometry[1][0]-geometry[0][0]);
             // let b = geometry[1][1] - coef_dir * geometry[1][0];
 
-            let new_list_geom = apiProperties.pointsPolyline(geometry[0],geometry[1],4);
+            // let new_list_geom = apiProperties.pointsPolyline(geometry[0],geometry[1],4);
+            let new_list_point = interpolation.liste_point(geometry[0][0],geometry[0][1],geometry[1][0],geometry[1][1],6);
 
-            console.log(new_list_geom);
+            console.log(new_list_point);
             
 
             var properties = {

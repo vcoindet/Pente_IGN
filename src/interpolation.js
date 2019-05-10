@@ -28,8 +28,7 @@ function coeff_droite(x1, y1, x2, y2){
   * @return {lst[int]} indice - Renvoie l'interpolation y d'un point
   */
 function interpollation_y(x1, y1, x2, y2, xi){
-	let yi = y1+ (y2−y1) * ((xi−x1)/(x2−x1));
-
+	let yi = y1 + ((y2 - y1) * ((xi - x1) / (x2 - x1)));
 	return yi;
 }
 

@@ -246,9 +246,12 @@ module.exports = {
                 let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
                 filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
                 // console.log(filePath);
+                // numero de la tuile ou récupérer la valeur de pente
+                let numTuile = search_coord.numTuile(inLongitude,inLatitude);
+                
                 
                 // TEST DE LA FONCTION READTILE
-                const buffer = await fileRead.readTile(filePath,14);
+                const buffer = await fileRead.readTile(filePath,numTuile);
                 let matrixIndice = apiProperties.coordToPointMatrix(inLongitude, inLatitude);
                 let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
                 console.log(matrixAlti);
@@ -285,6 +288,7 @@ module.exports = {
                 
             res.json({
                 geometry,
+                "altitude":matrixAlti[4],
                 properties,
                 "slope":slope,
                 "aspect":aspect

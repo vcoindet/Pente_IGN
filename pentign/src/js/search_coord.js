@@ -250,9 +250,9 @@ function numTuile(X, Y){
 	let i = Math.floor(X % 16);
 	let j = Math.floor(Y % 16);
 
-	numTuile = i + (j * tilesPerWidth);
+	resTuile = i + (j * tilesPerWidth);
 
-	return numTuile;
+	return resTuile;
 }
 
 /**
@@ -415,4 +415,5 @@ module.exports = {
 	numTuile : function(x, y){
 		return numTuile(x, y);
 	}
+	
 }

@@ -1,6 +1,6 @@
 
 const express = require('express');
-// const cors = require('cors'); //util pour les autorisation
+const cors = require('cors'); //util pour les autorisation
 
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
@@ -35,7 +35,7 @@ module.exports = {
         //       [ 698.3300170898438, 698.3800048828125, 698.4199829101562 ] ] };
 
         const app = express();// instanciation de l'application express
-
+        app.use(cors());
         // ################################ POLYLIGNE #####################################
         app.get("/polyligne",function (req,res){
 
@@ -260,12 +260,12 @@ module.exports = {
 
                 //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
-                slope = algoZAT.compute(matrixAlti,10)['slope'];
-                aspect = algoZAT.compute(matrixAlti,10)['aspect'];
+                slope = algoZAT.compute(matrixAlti,1)['slope'];
+                aspect = algoZAT.compute(matrixAlti,1)['aspect'];
             }
             else if (algo == 'Horn'){
-                slope = algoHorn.compute(matrixAlti,10)['slope'];
-                aspect = algoHorn.compute(matrixAlti,10)['aspect'];
+                slope = algoHorn.compute(matrixAlti,1)['slope'];
+                aspect = algoHorn.compute(matrixAlti,1)['aspect'];
             }
 
             // conversion degré pourcent

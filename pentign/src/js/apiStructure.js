@@ -252,7 +252,6 @@ module.exports = {
                 // numero de la tuile ou récupérer la valeur de pente
                 let numTuile = search_coord.numTuile(inLongitude,inLatitude);
                 
-                
                 // TEST DE LA FONCTION READTILE
                 const buffer = await fileRead.readTile(filePath,numTuile);
                 let matrixIndice = apiProperties.coordToPointMatrix(inLongitude, inLatitude);
@@ -275,18 +274,12 @@ module.exports = {
                         let lat = calculate_geometry_matrix[i][1];
                         console.log(lon);
                         console.log(lat);
-                        
+
                         calculate_geometry_matrix[i] = L93_to_WGS84.transform(lon,lat);
-
                     }
-
                 } else{
-
                 }
-
                 
-                
-
                 // console.log("indice coord : " + search_coord.indiceCoord(inLongitude,inLatitude)['coord_point']);
 
                 // let X_Y = search_coord.indiceCoord(x,y)["coord_point"]
@@ -433,50 +426,64 @@ module.exports = {
         })
         
         .get('/bunding', function(){
-			// /bunding?coord1={'x'=12, 'y'=23}&coord2={'x'=16, 'y'=40}
+			//bunding?coord='1,2|3,4|5,6|7,8'
+
+			let liste_point = req.query.coord;
+
+			liste_point = liste_point.split("|");
+
+			for(let i = 0; i < liste_point.length; i++){
+				liste_point[i] = liste_point[i].split(",");
+				liste_point[i][0] = parseInt(liste_point[i][0], 10);
+				liste_point[i][1] = parseInt(liste_point[i][1], 10);
+			}
+
+			//liste_point = [[1,2], [3, 3]]
+
+			/*
+			function coordStringToInt(coord){
+				let coordInt = coord.split(",");
+				coordInt[0] = parseInt(coordInt[0], 10);
+				coordInt[1] = parseInt(coordInt[1], 10);
+				return coordInt;
+			}
+			*/
 			
 			//coord hg de l'utilisateur
-			let coord = JSON.parse(req.query.coord1);
-			let x1 = coord_hg['lat'];
-			let y1 = coord_hg['lng'];
+			let x1 = liste_point[0][0];
+			let y1 = liste_point[0][1];
 			
 			
 			//coord bd de l'utilisateur
-			let coord_bd = JSON.parse(req.query.coord1);
-			
-			let x2 = coord_bd['lat'];
-			let y2 = coord_bd['lng'];
-			
+			let x2 = liste_point[1][0];
+			let y2 = liste_point[1][1];
+
 			let indice = search_coord.indiceCoord(x,y);
 
-			let liste_point = [];
-
+			let bonding_box = [];
+			
+			/*bonding_box = [
+							[[1,2], [2,2],[3,2]],
+							[[1,3], [2,3],[3,3]], 
+							[[1,4], [2,4],[3,4]]
+							]
+			
+			*/
 			let largeur = x2 - x1;
 			let longeur = y2 - y1;
 
 			for(let i = 0; i < largeur; i++){
 				for(let j = 0; j < longeur; i++){
-					liste_point[i] = [x1 + j, y1 + i];
+					bonding_box.push([])
+					bonding_box[i][j] = [x1 + j, y1 + i];
 				}
 			}
-			
-			
-			
-			let lst_json = apiProperties.jsonPoint(req.query.lng, req.query.lat, req.query.unit, req.query.proj);
-
-			
-			if(coord1 == undefined || coord2 == undefined){
-				res.send("erreur: rentrer des coordonnées valides")
-			}
-
 		});
           
         app.listen(8080, function () {
             console.log('Listening on port 8080!');
             });
-
     }
-
 }
 
 // let app = express();

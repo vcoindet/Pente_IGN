@@ -146,6 +146,8 @@ function searchIndiceCoord(x, y){
   * @return {lst[int]} indice - indice i j dans la tuile de la coord
   */
 function indiceCoord(x, y){
+	
+
 	//X gauche
 	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
 	let X_phase_hg = I_tms_hg * resolution;//coordonnée du pixel à gauche concerné
@@ -156,11 +158,14 @@ function indiceCoord(x, y){
 	
 	//Y haut
 	let J_tms_hg = Math.floor((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
-	let Y_phase_hg = J_tms_hg * resolution;//coordonnée du pixel en haut concerné
+	
+	let Y_phase_hg = Math.floor(Y0 - (J_tms_hg * resolution));//coordonnée du pixel en haut concerné
 
 	//Y bas
 	let J_tms_bg = Math.ceil((Y0 - y)) / resolution;//indice du pixel sur l'ensemble
-	let Y_phase_bg = J_tms_bg * resolution;//coordonnée du pixel en bas concerné
+	let Y_phase_bg = Math.ceil(Y0 - (J_tms_bg * resolution));//coordonnée du pixel en bas concerné
+	
+	console.log(J_tms_bg);
 
 	if(Math.abs(X_phase_hd - x) < Math.abs(x - X_phase_hg)){
 		X_phase_final = X_phase_hd;//coord X le plus proche
@@ -183,7 +188,12 @@ function indiceCoord(x, y){
 	let I_phase = I_phase_final % TileW;//indice I du pixel dans la tuile
 	let J_phase = J_phase_final % TileH;//indice J du pixel dans la tuile
 
-	return [I_phase, J_phase];
+	let point ={
+		indice_point : [I_phase, J_phase],
+		coord_point : [X_phase_final, Y_phase_final],
+	}
+	
+	return point;
 }
 
  /**
@@ -369,8 +379,11 @@ function coordToindice(x, y, niveau, type){
 //var Xparis = 652470.64;
 //var Yparis = 6862036.80;
 
-//var Xannecy = 940169.63;
-//var Yannecy = 6538433.65;
+var Xannecy = 940169.63;
+var Yannecy = 6538433.65;
+
+console.log(indiceCoord(Xannecy, Yannecy));
+
 //coord tuile de paris :
 //159
 //1252

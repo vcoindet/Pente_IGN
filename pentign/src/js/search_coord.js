@@ -48,7 +48,6 @@ var tilesPerHeight = 16; //nb de tuile dans la hauteur de la dalle
 var pathDepth = 2; //profondeur arborescence
 
  /**
-  *
   * @function
   * @name searchIndiceCoord
   * @description Renvoie les indices de dalle
@@ -57,7 +56,6 @@ var pathDepth = 2; //profondeur arborescence
   * @param {int} Y - coord en lambert 93
   * @return {lst[int]} indice - coord haut gauche de la dalle en lambert93
   */
-
 function searchIndiceCoord(x, y){
 	let realW = resolution * TileW;//largeur reelle d'une tuile
 	let realH = resolution * TileH;//hauteur reelle d'une tuile
@@ -138,6 +136,15 @@ function searchIndiceCoord(x, y){
 	return [I_dalle, J_dalle];
 }
 
+/**
+  * @function
+  * @name indiceCoord
+  * @description Renvoie les indices dans la tuile
+  * en fonction de coord geographique
+  * @param {int} x - coord en lambert 93
+  * @param {int} y - coord en lambert 93
+  * @return {lst[int]} indice - indice i j dans la tuile de la coord
+  */
 function indiceCoord(x, y){
 	//X gauche
 	let I_tms_hg = Math.floor((x - X0)) / resolution;//indice du pixel sur l'ensemble
@@ -406,6 +413,6 @@ module.exports = {
 	}
 
 	numTuile : function(x, y){
-		return numTuile(X, Y);
+		return numTuile(x, y);
 	}
 }

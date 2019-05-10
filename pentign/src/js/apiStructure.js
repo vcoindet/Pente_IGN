@@ -217,8 +217,8 @@ module.exports = {
         app.get('/point',async function(req,res){
 
             //query
-            let inLongitude = parseFloat(req.query.lon);
-            let inLatitude = parseFloat(req.query.lat);
+            let U_Longitude = parseFloat(req.query.lon);
+            let U_Latitude = parseFloat(req.query.lat);
 
             //propriétés rentrés par l'utilisateur
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
@@ -228,11 +228,12 @@ module.exports = {
             //conversion des coordonnées dans la bonne projection
             let coord_l93 = new Array(); 
             if(proj == "4326"){
-                coord_l93 = WGS84_to_L93.transform(inLongitude,inLatitude);
+                coord_l93 = WGS84_to_L93.transform(U_Longitude,U_Latitude);
                 inLongitude = coord_l93[0];
                 inLatitude = coord_l93[1];
             } else {
-
+                inLongitude = U_Longitude;
+                inLatitude = U_Latitude;
             }
 
             //initialisation des valeurs de pente et d'orientation
@@ -275,9 +276,9 @@ module.exports = {
             console.log("pente : " + slope);
             console.log("orientation : " + aspect);
 
-            let geometry = {
-                "latitude":inLatitude,
-                "longitude":inLongitude
+            let input_geometry = {
+                "latitude":U_Latitude,
+                "longitude":U_Longitude
             };
 
             let properties = {
@@ -287,7 +288,7 @@ module.exports = {
             };
                 
             res.json({
-                geometry,
+                input_geometry,
                 "altitude":matrixAlti[4],
                 properties,
                 "slope":slope,

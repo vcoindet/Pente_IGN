@@ -3,20 +3,28 @@ Web service de calcul de pente
 #Installation
 Accès à notre web service à partir d'une url disponible sur un serveur. Complétez l'url pour accéder aux fonctionnalités présentées ci-dessous : 
 #Calcul de pente sur des points 
-exemple d'url = ./point?lat=2&lng=48&algo='Horn'&unit='deg'&proj=2154
+exemple d'url = "./point?lat=2&lng=48&algo='Horn'&unit='deg'&proj=2154"
+
+paramètre	|	type	|	description			|	obligatoire ou facultatif	|
+#################################################################################
+lat			|	float	|	latitude en mètre	|	obligatoire					|
+lon			|	float	|	longitude en mètre	|	obligatoire
+algo		|	string	|	algoritme de calcul de pente et d'orientation
 
 lat  -> float			Obligatoire
 
 lng -> float			Obligatoire
 
-algo -> string			Facultatif, par défault Zevenbergen and Thorne
+algo -> string			
+						Algoritme de calcul utilisé pour calculer la pente et l'oriantationFacultatif
+						Facultatif, par défault Zevenbergen and Thorne
 	"Horn" ou "Zevenbergen_Thorne"
 	
 unit -> string 			Facultatif, par défault "deg" 
 	"deg" (degré) ou "prc" (pourcentage)
 
 proj -> int 
-	3857 = code EPSG de la projection Pseudo Mercator WGS84
+	4326 = code EPSG de la projection Pseudo Mercator WGS84
 	2154 = code EPSG de la projection Lambert 93 
 
 

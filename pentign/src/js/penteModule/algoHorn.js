@@ -1,6 +1,8 @@
 // let mat_tmp = [[10,20,25],[22,5,25],[20,24,18]];
 
 function horn_algoritm(mat, taille_pixel){
+	let orientation;
+	
 	let A = mat[0]; //i + 1, j - 1
 	let B = mat[1]; //i + 1, j
 	let C = mat[2]; //i + 1, j + 1
@@ -18,8 +20,12 @@ function horn_algoritm(mat, taille_pixel){
 
 	let pente =  (Math.sqrt(E_W ** 2 + N_S ** 2) * (180 / Math.PI));
 	
-
-	let orientation = (Math.atan(E_W / N_S) * (180 / Math.PI)) + 180;
+	if(N_S != 0){
+		orientation = (Math.atan(E_W / N_S) * (180 / Math.PI)) + 180;
+	}
+	else{
+		orientation = -1;
+	}
 	
 	
 	// return [pente, orientation];

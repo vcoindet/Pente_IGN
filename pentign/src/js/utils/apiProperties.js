@@ -113,5 +113,36 @@ module.exports = {
 			return matrix;
 		},
 
+		//calcule lea longueur d'une polyligne
+		lineLength:function (pt_list) {
+			let length_polyline = 0;
+			for(let i = 0; i < pt_list.length-1 ;i++){
+                let l = (pt_list[i+1][0] - pt_list[i][0])**2;
+                let h = (pt_list[i+1][1] - pt_list[i][1])**2;
+                length_polyline += Math.sqrt(l+h);
+			}
+			return length_polyline;
+		},
+
+		//division d'une polyligne en plusieurs points
+		pointsPolyline : function (pt_debut,pt_fin,precision) {
+
+			let new_list_geom = new Array();
+			let nb_point = this.lineLength([pt_debut,pt_fin]) / precision;
+
+			let longueur_x = Math.abs(pt_fin[0] - pt_debut[0]);
+			let longueur_y = Math.abs(pt_fin[1] - pt_debut[1]);
+			
+			let ecart_pt_x = longueur_x / nb_point;
+			let ecart_pt_y = longueur_y / nb_point;
+			
+			for(let i = 0;i < nb_point ;i++){
+                new_list_geom.push([pt_debut[0] + ecart_pt_x * i, pt_debut[1] + ecart_pt_y * i]);
+			}
+			
+			new_list_geom.push([pt_fin[0],pt_fin[1]]);
+
+			return new_list_geom;
+		}
 
     }

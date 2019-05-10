@@ -46,46 +46,40 @@ module.exports = {
             }
 
             //la polyligne doit comporter au moins deux points
-            if(geometry.length <= 2){
+            if(geometry.length <= 1){
                 res.send("erreur: rentrer au moins 2 points")
             }
 
-            console.log(geometry);
-            
-
-            let nb_point;
-            //nombre de points pour la division de la ligne
-            if(req.query.nb_point == undefined){
-                nb_point = 1;
-            }
-            else{
-                nb_point = req.query.nb_point;
-            }
-
-            if(geometry.length <= 1){
-                res.send('erreur, veuillez rentrer une liste de plus de deux points');
-            }
-            // console.log("liste de points : " + geometry);
-            // console.log(geometry[0]);
-
-            let length_list = geometry.length;
-            let length_polyline = 0;
-
-            //calcul du nombre de points et la longueur de la polyligne
-            // for(let i = 0; i < length_list-1 ;i++){
-            //     let l = (geometry['coord'][i+1][0] - geometry['coord'][i][0])**2;
-            //     let h = (geometry['coord'][i+1][1] - geometry['coord'][i][1])**2;
-            //     length_polyline += Math.sqrt(l+h);
-            // }
-
-            
-            // on détecte si le nombre de point par rapport à celui inséré est dépassé
-
-            //ajout dans le resultat JSON
-
-
+            // propriétés
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
             let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
+            let proj = apiProperties.valProperties(req.query.algo,'2154','4326');    
+
+            if(proj == "4326"){
+                for(let i = 0 ; i < geometry.length ; i++){
+                    geometry[i] = WGS84_to_L93.transform(geometry[i][0],geometry[i][1]);
+                }
+            } else{
+            }
+
+            let length_polyline = 0;
+            //calcul de la longueur de la polyligne (PLANAIRE)
+            for(let i = 0; i < geometry.length-1 ;i++){
+                let l = (geometry[i+1][0] - geometry[i][0])**2;
+                let h = (geometry[i+1][1] - geometry[i][1])**2;
+                length_polyline += Math.sqrt(l+h);
+            }
+
+            console.log(geometry);
+
+            // interpolation
+            // let coef_dir = (geometry[1][1]-geometry[0][1]) / (geometry[1][0]-geometry[0][0]);
+            // let b = geometry[1][1] - coef_dir * geometry[1][0];
+
+            let new_list_geom = apiProperties.pointsPolyline(geometry[0],geometry[1],4);
+
+            console.log(new_list_geom);
+            
 
             var properties = {
                 "algoritm" : algo,
@@ -93,27 +87,26 @@ module.exports = {
                 "projection" : req.query.proj
             };
 
-
-            // reconstruit la liste de point (expérimental)
-            // if(length_list > nb_point){
-            //     let point_pas = Math.ceil(length_list / nb_point);// on prend un point tout les x point_pas
-            //     console.log(point_pas);
-			// 	let new_list_point = [];
-			// 	for(let j = 0; j < length_list; j++){
-            //         if(j % point_pas == 0){
-            //             new_list_point.push(geometry['coord'][j]);
-            //         }			
-			// 	}
-            //     listepoint = new_list_point;
-            //     console.log(new_list_point);
-            // }
-
-
             // on donne la liste des pentes et des orientations calculées
-
             let liste_pts_pente = [];
             let lst_pente = [];
             let lst_orien = [];
+
+            try {
+
+                for(let i = 0 ; i < new_list_geom.length ; i++){
+                    let filePath = search_coord.coordToindice(new_list_geom[i][0], new_list_geom[i][1], "8", "tif");
+                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                    console.log(filePath);
+                    
+                }
+                // récupère la dalle à partir des coordonnées insérées dans l'url
+            } catch (error) {
+                console.log(error);
+                
+            }
+
+
             // if (algo == 'Zevenbergen and Thorne') {
             //     for(let i = 0; i < length_list; i++){
             //         lst_pente.push(algoZAT.compute(matrix,10)['slope']);
@@ -147,7 +140,7 @@ module.exports = {
             res.json({
                 message : "On génère un json avec les paramètres de la lineString",
                 geometry,
-                "number of points":length_list,
+                "number of points":geometry.length,
                 "polyline length":length_polyline,
                 properties,
                 "liste_points_slopes":liste_pts_pente,

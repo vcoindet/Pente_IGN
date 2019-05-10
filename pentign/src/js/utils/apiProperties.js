@@ -100,15 +100,18 @@ module.exports = {
 		//matrice de coordonnées autour d'un point
 		coordinateMatrix : function (x,y,ecart) {
 			let matrix = new Array();
-			matrix.push(search_coord.indiceCoord(x-1,y+1)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x,y+1)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x+1,y+1)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x-1,y)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x,y)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x+1,y)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x-1,y-1)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x,y-1)['coord_point'])
-			matrix.push(search_coord.indiceCoord(x+1,y-1)['coord_point'])
+			let coord_point = 'coord_point';
+			matrix.push(search_coord.indiceCoord(x-1,y+1)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x,y+1)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x+1,y+1)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x-1,y)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x,y)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x+1,y)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x-1,y-1)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x,y-1)[coord_point]);
+			matrix.push(search_coord.indiceCoord(x+1,y-1)[coord_point]);
 			return matrix;
-		}
+		},
+
+
     }

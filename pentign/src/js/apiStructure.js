@@ -28,31 +28,29 @@ module.exports = {
     launch : function(){
 
 
-        //echantillon de matrice
-        // let matrix =
-        // { "image": 
-        //     [ [ 698.4400024414062, 698.489990234375, 698.5399780273438 ],
-        //       [ 698.3800048828125, 698.4299926757812, 698.47998046875 ],
-        //       [ 698.3300170898438, 698.3800048828125, 698.4199829101562 ] ] };
-
         const app = express();// instanciation de l'application express
 
         // ################################ POLYLIGNE #####################################
         app.get("/polyligne",function (req,res){
 
-            // var geometrie = JSON.parse(req.params.my_json);
-            let geometry = JSON.parse(req.query.geom);
+            let geometry = req.query.geom.split('|');
+            //on récupère la liste de points
+            for(let i = 0 ; i < geometry.length ; i++){
+                geometry[i] = geometry[i].split(',');
+                geometry[i][0] = parseFloat(geometry[i][0]);
+                geometry[i][1] = parseFloat(geometry[i][1]);
+            }
 
             if(geometry == undefined ){
                 res.send("erreur: rentrer des coordonnées valides")
             }
 
             //la polyligne doit comporter au moins deux points
-            if(geometry['coords'] <= 2){
+            if(geometry.length <= 2){
                 res.send("erreur: rentrer au moins 2 points")
             }
 
-            console.log("geometrie : " + geometry);
+            console.log(geometry);
             
 
             let nb_point;
@@ -64,21 +62,21 @@ module.exports = {
                 nb_point = req.query.nb_point;
             }
 
-            if(geometry['coord'].length <= 1){
+            if(geometry.length <= 1){
                 res.send('erreur, veuillez rentrer une liste de plus de deux points');
             }
-            console.log("liste de points : " + geometry);
-            console.log(geometry['coord'][0]);
+            // console.log("liste de points : " + geometry);
+            // console.log(geometry[0]);
 
-            let length_list = geometry['coord'].length;
+            let length_list = geometry.length;
             let length_polyline = 0;
 
             //calcul du nombre de points et la longueur de la polyligne
-            for(let i = 0; i < length_list-1 ;i++){
-                let l = (geometry['coord'][i+1][0] - geometry['coord'][i][0])**2;
-                let h = (geometry['coord'][i+1][1] - geometry['coord'][i][1])**2;
-                length_polyline += Math.sqrt(l+h);
-            }
+            // for(let i = 0; i < length_list-1 ;i++){
+            //     let l = (geometry['coord'][i+1][0] - geometry['coord'][i][0])**2;
+            //     let h = (geometry['coord'][i+1][1] - geometry['coord'][i][1])**2;
+            //     length_polyline += Math.sqrt(l+h);
+            // }
 
             
             // on détecte si le nombre de point par rapport à celui inséré est dépassé
@@ -97,18 +95,18 @@ module.exports = {
 
 
             // reconstruit la liste de point (expérimental)
-            if(length_list > nb_point){
-                let point_pas = Math.ceil(length_list / nb_point);// on prend un point tout les x point_pas
-                console.log(point_pas);
-				let new_list_point = [];
-				for(let j = 0; j < length_list; j++){
-                    if(j % point_pas == 0){
-                        new_list_point.push(geometry['coord'][j]);
-                    }			
-				}
-                listepoint = new_list_point;
-                console.log(new_list_point);
-            }
+            // if(length_list > nb_point){
+            //     let point_pas = Math.ceil(length_list / nb_point);// on prend un point tout les x point_pas
+            //     console.log(point_pas);
+			// 	let new_list_point = [];
+			// 	for(let j = 0; j < length_list; j++){
+            //         if(j % point_pas == 0){
+            //             new_list_point.push(geometry['coord'][j]);
+            //         }			
+			// 	}
+            //     listepoint = new_list_point;
+            //     console.log(new_list_point);
+            // }
 
 
             // on donne la liste des pentes et des orientations calculées
@@ -116,34 +114,34 @@ module.exports = {
             let liste_pts_pente = [];
             let lst_pente = [];
             let lst_orien = [];
-            if (algo == 'Zevenbergen and Thorne') {
-                for(let i = 0; i < length_list; i++){
-                    lst_pente.push(algoZAT.compute(matrix,10)['slope']);
-                    lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
-                    liste_pts_pente['slope'] = algoZAT.compute(matrix,10)['slope'];
-                    liste_pts_pente['aspect'] = algoZAT.compute(matrix,10)['aspect'];
+            // if (algo == 'Zevenbergen and Thorne') {
+            //     for(let i = 0; i < length_list; i++){
+            //         lst_pente.push(algoZAT.compute(matrix,10)['slope']);
+            //         lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
+            //         liste_pts_pente['slope'] = algoZAT.compute(matrix,10)['slope'];
+            //         liste_pts_pente['aspect'] = algoZAT.compute(matrix,10)['aspect'];
 
-                    let json = {
-                        "slope":algoZAT.compute(matrix,10)['slope'],
-                        "aspect":algoZAT.compute(matrix,10)['aspect']
-                    }
+            //         let json = {
+            //             "slope":algoZAT.compute(matrix,10)['slope'],
+            //             "aspect":algoZAT.compute(matrix,10)['aspect']
+            //         }
 
-                    liste_pts_pente.push(json);
+            //         liste_pts_pente.push(json);
 
 
-                }
-            }
-            else if (algo == 'Horn'){
-                for(let i = 0; i < length_list; i++){
-                    lst_pente.push(algoZAT.compute(matrix,10)['slope']);
-                    lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
-                }
-            }
+            //     }
+            // }
+            // else if (algo == 'Horn'){
+            //     for(let i = 0; i < length_list; i++){
+            //         lst_pente.push(algoZAT.compute(matrix,10)['slope']);
+            //         lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
+            //     }
+            // }
 
-            console.log(lst_pente);
-            console.log(lst_orien);
-            console.log("nb_point : "+nb_point);
-            console.log("pente du premier point" + liste_pts_pente[0]['slope']);
+            // console.log(lst_pente);
+            // console.log(lst_orien);
+            // console.log("nb_point : "+nb_point);
+            // console.log("pente du premier point" + liste_pts_pente[0]['slope']);
             
             
             res.json({
@@ -243,15 +241,12 @@ module.exports = {
             let aspect = 0;
 
             try {
-                // lon = 940169.63
-                // lat = 6538433.65
                 // récupère la dalle à partir des coordonnées insérées dans l'url
                 let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
                 filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
-                // console.log(filePath);
+
                 // numero de la tuile ou récupérer la valeur de pente
-                let numTuile = search_coord.numTuile(inLongitude,inLatitude);
-                
+                let numTuile = search_coord.numTuile(inLongitude,inLatitude);         
                 
                 // TEST DE LA FONCTION READTILE
                 const buffer = await fileRead.readTile(filePath,numTuile);
@@ -283,17 +278,6 @@ module.exports = {
                 } else{
 
                 }
-
-                
-                
-
-                // console.log("indice coord : " + search_coord.indiceCoord(inLongitude,inLatitude)['coord_point']);
-
-                // let X_Y = search_coord.indiceCoord(x,y)["coord_point"]
-                // console.log(X_Y);
-                
-                // res.send('ok')
-                // console.log();
                 
                 //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
@@ -310,19 +294,18 @@ module.exports = {
                 slope = slope * 100 / 45;
             }
 
-            console.log("pente : " + slope);
-            console.log("orientation : " + aspect);
-
             res.json({
                 //coordonnée du point choisi
                 "geometry_input":{
                     "latitude":U_Latitude,
                     "longitude":U_Longitude
                 },
+
                 "geometry_calculate":{
                     "latitude":calculate_geometry[1],
                     "longitude":calculate_geometry[0]
                 },
+
                 "altitude" : matrixAlti[4],
                 //ajout coordonnée point final
                 "properties":{
@@ -334,55 +317,13 @@ module.exports = {
                 "aspect" : aspect,
                 "matrix_calculate":matrixAlti,
                 "matrix_calculate_geometry":calculate_geometry_matrix
-                //ajout matrice de calcul avec alti et coordonnées des pixels
             });
 
             } catch (error) {
                 console.log(error);
-                
+                res.send('error');
             }
             
-
-            
-
-            // -- lire la tuile pour avoir la matrice 
-
-            //algoritmes de pente
-            // if (algo == 'Zevenbergen and Thorne') {
-            //     slope = algoZAT.compute(matrix,10)['slope'];
-            //     aspect = algoZAT.compute(matrix,10)['aspect'];
-            // }
-            // else if (algo == 'Horn'){
-            //     slope = algoHorn.compute(matrix,10)['slope'];
-            //     aspect = algoHorn.compute(matrix,10)['aspect'];
-            // }
-
-            // obtention des coordonnées images
-            // let coord_img = search_coord.indiceCoord(Xparis,Yparis);
-            // console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
-
-            // repertoire image
-            // let imagePath = "/home/formation/Bureau/pyramide/IMAGE/8/01/60/BZ.tif";
-
-            //obtention de la matric pour le calcul des pentes mnt
-            // let matrix = getMatrix(coord_img,imagePath);
-            // console.log("matrice : " + matrix);
-            
-            
-
-            // var pixel_value = data[0][i + imageWidth * j];
-            // let pente = 1;
-            // json en sortie
-            // res.json({
-            //     "geometry":geometry,
-            //     "properties":properties,
-            //     "slope":slope,
-            //     "aspect":aspect,
-            //     "matrix":matrix
-
-            // })
-            // res.send('ok');
-    
         })
 
         .get('/surface',function(req,res){

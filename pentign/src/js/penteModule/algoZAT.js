@@ -15,10 +15,11 @@ function zat_algoritm(image,taille_pixel){
     var Z6 = image[5];
     var Z8 = image[7];
 
-    var G = (-Z4+Z6)/(2*taille_pixel);
-    var H = (Z2-Z8)/(2*taille_pixel);
+    var G = (-Z4 + Z6) / (2 * taille_pixel);
+    var H = (Z2 - Z8) / (2 * taille_pixel);
 
-    var slope = Math.sqrt(G**2+H**2)
+    var slope = Math.sqrt(G**2 + H**2)
+
     var slope_angle = Math.atan(slope) * 180 / Math.PI;
     var aspect = Math.atan(H/G) * 180 / Math.PI;
 

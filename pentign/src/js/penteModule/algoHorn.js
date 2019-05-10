@@ -1,4 +1,4 @@
-// let mat_tmp = [[10,20,25],[22,5,25],[20,24,18]];
+let mat_tmp = [10,20,25,22,5,25,20,24,18];
 
 function horn_algoritm(mat, taille_pixel){
 	let orientation;
@@ -15,21 +15,21 @@ function horn_algoritm(mat, taille_pixel){
 	let E_W = ((C + (2 * F) + I) - (A + (2 * D) + G)) / (8 * taille_pixel);
 	let N_S = ((C + (2 * B) + A) - (I+ (2 * H) + G)) / (8 * taille_pixel);
 	
-	// console.log(E_W);
-	// console.log(N_S);
+	console.log(E_W);
+	console.log(N_S);
 
-	let pente =  Math.atan((Math.sqrt(E_W ** 2 + N_S ** 2))  * (180 / Math.PI));
+	let pente =  Math.atan(Math.sqrt(E_W ** 2 + N_S ** 2))  * (180 / Math.PI);
 	
 	if(N_S != 0){
-		orientation = (Math.atan(E_W / N_S) * (180 / Math.PI));
+		orientation = Math.atan(E_W / N_S) * (180 / Math.PI);
 		if(orientation < 0){
-			orientation = 90.0 - orientation 
+			orientation = 90.0 - orientation;
 		}
 		else if(orientation > 90.0){
-			orientation = 360.0 - orientation + 90.0
+			orientation = 360.0 - orientation + 90.0;
 		}
 		else{
-			orientation = 90.0 - orientation
+			orientation = 90.0 - orientation;
 		}
 	}
 	else{
@@ -41,9 +41,9 @@ function horn_algoritm(mat, taille_pixel){
 	return {"slope":pente,"aspect":orientation}
 }
 
-// let a = horn_algorith(mat_tmp, 10);
+let a = horn_algoritm(mat_tmp, 10);
 
-// console.log(a['slope']);
+console.log(a);
 
 
 module.exports = {

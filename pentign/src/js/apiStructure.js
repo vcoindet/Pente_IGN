@@ -14,6 +14,9 @@ var apiProperties = require('./utils/apiProperties.js');
 var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
 var L93_to_WGS84 = require('./utils/L93_to_WGS84');
 
+var config = require('../config/template.json');
+var chemin_pyr = config["application"]["pyramide"];
+
 module.exports = {
 
     /**
@@ -243,7 +246,7 @@ module.exports = {
             try {
                 // récupère la dalle à partir des coordonnées insérées dans l'url
                 let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
-                filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                filePath = chemin_pyr + filePath;
 
                 // numero de la tuile ou récupérer la valeur de pente
                 let numTuile = search_coord.numTuile(inLongitude,inLatitude);         
@@ -379,8 +382,8 @@ module.exports = {
 
 			for(let i = 0; i < liste_point.length; i++){
 				liste_point[i] = liste_point[i].split(",");
-				liste_point[i][0] = parseInt(liste_point[i][0], 10);
-				liste_point[i][1] = parseInt(liste_point[i][1], 10);
+				liste_point[i][0] = parseFloat(liste_point[i][0], 10);
+				liste_point[i][1] = parseFloat(liste_point[i][1], 10);
 			}
 
 			//liste_point = [[1,2], [3, 3]]

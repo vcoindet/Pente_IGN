@@ -11,6 +11,7 @@ var fs = require('fs');
 var search_coord = require('./search_coord.js');
 var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
+var WGS84_to_L93 = require('./utils/WGS84_to_L93.js')
 
 module.exports = {
 
@@ -157,51 +158,51 @@ module.exports = {
         });
 
         // ############################## POLYLIGNE (OLD) #############################
-        app.get('/polyligne', function (req, res) {
-            //query
-            let x = parseFloat(req.query.x);
-            let y = parseFloat(req.query.y);
+        // app.get('/polyligne', function (req, res) {
+        //     //query
+        //     let x = parseFloat(req.query.x);
+        //     let y = parseFloat(req.query.y);
 
-            let listepoint = req.query.listepoint;
-            // let listepoint = req.params.liste;
-            let nb_point = req.query.nb_point;
-            //let lst_x = [];
-            //let lst_y = [];
+        //     let listepoint = req.query.listepoint;
+        //     // let listepoint = req.params.liste;
+        //     let nb_point = req.query.nb_point;
+        //     //let lst_x = [];
+        //     //let lst_y = [];
             
-            let lst_pente = [];
-            let lst_orien = [];
+        //     let lst_pente = [];
+        //     let lst_orien = [];
             
-            //erreur
-            // reconstruit la liste de point
-            if(listepoint.length > nb_point){
-				let point_pas = Math.ceil(listepoint / nb_point);//on prend un point tout les x point_pas
-				let new_list_point = [];
-				for(let j = 0; j < listepoint; j + point_pas){
-					new_list_point.push(listepoint[j]);
-				}
-				listepoint = new_list_point;
-			}
+        //     //erreur
+        //     // reconstruit la liste de point
+        //     if(listepoint.length > nb_point){
+		// 		let point_pas = Math.ceil(listepoint / nb_point);//on prend un point tout les x point_pas
+		// 		let new_list_point = [];
+		// 		for(let j = 0; j < listepoint; j + point_pas){
+		// 			new_list_point.push(listepoint[j]);
+		// 		}
+		// 		listepoint = new_list_point;
+		// 	}
 			
-            for(let i = 0; i < listepoint.length; i++){
-				//lst_x.push(listepoint[i][0]);
-				//lst_y.push(listepoint[i][1]);
-				lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
-				lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
-			}
+        //     for(let i = 0; i < listepoint.length; i++){
+		// 		//lst_x.push(listepoint[i][0]);
+		// 		//lst_y.push(listepoint[i][1]);
+		// 		lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
+		// 		lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
+		// 	}
 
-            let pente = penteModule.computeSlope(x,y);
-            let orient = penteModule.computeAspect(x,y);
-            for (let i = 0; i < nb_point; i++){
-            res[i].json({
-                  "lat" : x[i],
-                  "long" : y[i],
-                  "alti": "",
-                  "geometry":listepoint
+        //     let pente = penteModule.computeSlope(x,y);
+        //     let orient = penteModule.computeAspect(x,y);
+        //     for (let i = 0; i < nb_point; i++){
+        //     res[i].json({
+        //           "lat" : x[i],
+        //           "long" : y[i],
+        //           "alti": "",
+        //           "geometry":listepoint
                   
-                });
-			}
+        //         });
+		// 	}
            
-          });
+        //   });
 
         app.get('/',function(req,res){
             res.json({
@@ -216,44 +217,39 @@ module.exports = {
         app.get('/point',async function(req,res){
 
             //query
-            let longitude = parseFloat(req.query.lon);
-            let latitude = parseFloat(req.query.lat);
+            let inLongitude = parseFloat(req.query.lon);
+            let inLatitude = parseFloat(req.query.lat);
 
-            let geometry = {
-                "latitude":latitude,
-                "longitude":longitude
-            };
-
+            //propriétés rentrés par l'utilisateur
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
             let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');
-            let proj = apiProperties.valProperties(req.query.proj,'4326','2154');   
+            let proj = apiProperties.valProperties(req.query.proj,'2154','4326');   
 
-            let properties = {
-                "algoritm" : algo,
-                "unit" : unite,
-                "projection" : proj
-            };
+            //conversion des coordonnées dans la bonne projection
+            let coord_l93 = new Array(); 
+            if(proj == "4326"){
+                coord_l93 = WGS84_to_L93.transform(inLongitude,inLatitude);
+                inLongitude = coord_l93[0];
+                inLatitude = coord_l93[1];
+            } else {
 
+            }
+
+            //initialisation des valeurs de pente et d'orientation
             let slope = 0;
             let aspect = 0;
-
-            // récupérer la matrice
-
-            // -- récupérer la tuile qui contient les données
-
 
             try {
                 // lon = 940169.63
                 // lat = 6538433.65
-                //récupère la dalle à partir des coordonnées insérées dans l'url
-                let filePath = search_coord.coordToindice(longitude, latitude, "8", "tif");
+                // récupère la dalle à partir des coordonnées insérées dans l'url
+                let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
                 filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
                 // console.log(filePath);
                 
                 // TEST DE LA FONCTION READTILE
                 const buffer = await fileRead.readTile(filePath,14);
-                // console.log(buffer);
-                let matrixIndice = apiProperties.coordToPointMatrix(longitude, latitude);
+                let matrixIndice = apiProperties.coordToPointMatrix(inLongitude, inLatitude);
                 let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
                 console.log(matrixAlti);
                 // res.send('ok')
@@ -275,10 +271,20 @@ module.exports = {
 
             console.log("pente : " + slope);
             console.log("orientation : " + aspect);
+
+            let geometry = {
+                "latitude":inLatitude,
+                "longitude":inLongitude
+            };
+
+            let properties = {
+                "algoritm" : algo,
+                "unit" : unite,
+                "projection" : proj
+            };
                 
             res.json({
-                "latitude":latitude,
-                "longitude":longitude,
+                geometry,
                 properties,
                 "slope":slope,
                 "aspect":aspect

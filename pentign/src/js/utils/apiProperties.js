@@ -48,12 +48,6 @@ module.exports = {
 			let algo = valProperties(U_algo,'Horn','Zevenbergen and Thorne');
 			let proj = valProperties(U_proj,'4326','2154');   
 
-			let properties = {
-				"algoritm" : algo,
-				"unit" : unite,
-				"projection" : proj
-			};
-
 			let slope;
 			let aspect;
 			
@@ -76,6 +70,11 @@ module.exports = {
 			let coord_img = search_coord.indiceCoord(Xparis,Yparis);
 			console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
 
+			let properties = {
+				"algoritm" : algo,
+				"unit" : unite,
+				"projection" : proj
+			};
 
 			var outJSON = {
 				"geometry":geometry,

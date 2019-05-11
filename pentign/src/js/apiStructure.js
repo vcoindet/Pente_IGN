@@ -75,14 +75,25 @@ module.exports = {
             // longueur en unité de mesure de la liste de points
             let line_length = apiProperties.lineLength(line_edge_list);
 
-
             //nouvelle liste de points créant de nouveaux points à l'intérieur de la ligne où calculer la pente
-            let new_list_point = interpolation.liste_point(line_edge_list[0][0],line_edge_list[0][1],line_edge_list[1][0],line_edge_list[1][1],6);
-            let calcul_point_list = interpolation.liste_point(line_edge_list[0][0],line_edge_list[0][1],line_edge_list[1][0],line_edge_list[1][1],6);
+            let ligne_interpol = [];
+            let calcul_point_list = [];
+
+            //calcul des coordonnées des points à l'interieur des lignes par interpolation
+            for(let i = 0 ; i < line_edge_list.length - 1 ; i++){
+                ligne_interpol.push(interpolation.liste_point(line_edge_list[i][0],line_edge_list[i][1],line_edge_list[i+1][0],line_edge_list[i+1][1],6));
+            }
+
+            //on extrait les résultats : on transforme les listes de liste de point en une liste de points simple
+            for(let i = 0 ; i < ligne_interpol.length ; i++){
+                for (let j = 0; j < ligne_interpol[i].length; j++) {
+                    calcul_point_list.push(ligne_interpol[i][j]);
+                }
+            }
             
             // points des extrémités
             // nombre de points
-            let line_edge_list_length = line_edge_list.length
+            let line_edge_list_length = line_edge_list.length;
 
             //initialisation de la liste des altitudes
             let line_edge_list_alti = [];

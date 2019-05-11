@@ -92,13 +92,23 @@ module.exports = {
         indiceToAlti: function(matrixIndice,buffer) {
             let matrix_alti = new Array();
             for(let i = 0 ; i < matrixIndice.length ; i++){
-                matrix_alti[i] = buffer.readFloatLE(i*4);
-            }
+				let imgIndice = ((256 * (matrixIndice[i][1] - 1)) + matrixIndice[i][0] ) *4 ;
+				matrix_alti[i] = buffer.readFloatLE(imgIndice);
+			}
             return matrix_alti;
 		},
 		
 		//matrice de coordonnées autour d'un point
-		coordinateMatrix : function (x,y,ecart) {
+		/**
+		 * @function
+		 * @name coordinateMatrix
+		 * @description revoie les coordonnées des 8 points de la matrice utilisés pour calculer la pente autour d'un point
+		 * @param {float} x - coordonnée x du point
+		 * @param {float} y - coordonnée y du point
+		 * @returns {[float],[float]} liste de coordonnées des points de la matrice
+		 * 
+		 */
+		coordinateMatrix : function (x,y) {
 			let matrix = new Array();
 			let coord_point = 'coord_point';
 			matrix.push(search_coord.indiceCoord(x-1,y+1)[coord_point]);
@@ -113,7 +123,16 @@ module.exports = {
 			return matrix;
 		},
 
-		//calcule lea longueur d'une polyligne
+		/**
+		 * 
+		 * @function
+		 * @name lineLength
+		 * @description calcule la longueur d'une polyligne formée par une liste de points
+		 * @param {[float,float]} pt_list - liste de points sous forme de coordonnées x y
+		 * @returns longueur totale de la polyligne
+		 * 
+		 */
+		//calcule la longueur d'une polyligne
 		lineLength:function (pt_list) {
 			let length_polyline = 0;
 			for(let i = 0; i < pt_list.length-1 ;i++){

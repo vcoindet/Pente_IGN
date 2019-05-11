@@ -35,81 +35,298 @@ module.exports = {
         const app = express();// instanciation de l'application express
         app.use(cors());
         // ################################ POLYLIGNE #####################################
-        app.get("/polyligne",function (req,res){
 
-            let geometry = req.query.geom.split('|');
-            //on récupère la liste de points
-            for(let i = 0 ; i < geometry.length ; i++){
-                geometry[i] = geometry[i].split(',');
-                geometry[i][0] = parseFloat(geometry[i][0]);
-                geometry[i][1] = parseFloat(geometry[i][1]);
+        app.get("/polyligne",async function (req,res){
+
+            //on récupère la liste de points renseignés par l'utilisateur
+            let line_edge_list = req.query.geom.split('|');
+            for(let i = 0 ; i < line_edge_list.length ; i++){
+                line_edge_list[i] = line_edge_list[i].split(',');
+                line_edge_list[i][0] = parseFloat(line_edge_list[i][0]);
+                line_edge_list[i][1] = parseFloat(line_edge_list[i][1]);
             }
 
-            if(geometry == undefined ){
+            if(line_edge_list == undefined ){
                 res.send("erreur: rentrer des coordonnées valides")
             }
 
             //la polyligne doit comporter au moins deux points
-            if(geometry.length <= 1){
+            if(line_edge_list.length <= 1){
                 res.send("erreur: rentrer au moins 2 points")
             }
 
             // propriétés
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
             let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
-            let proj = apiProperties.valProperties(req.query.algo,'2154','4326');    
+            let proj = apiProperties.valProperties(req.query.proj,'2154','4326');
 
+            // projection originale gardée en copie si changement de projection
+            let line_edge_list_origin_coord = line_edge_list.slice();
+
+            // projection des points insérés en entrée
             if(proj == "4326"){
-                for(let i = 0 ; i < geometry.length ; i++){
-                    geometry[i] = WGS84_to_L93.transform(geometry[i][0],geometry[i][1]);
+                for(let i = 0 ; i < line_edge_list.length ; i++){
+                    line_edge_list[i] = WGS84_to_L93.transform(line_edge_list[i][0],line_edge_list[i][1]);
                 }
             } else{
+
             }
 
-            let length_polyline = 0;
-            //calcul de la longueur de la polyligne (PLANAIRE)
-            for(let i = 0; i < geometry.length-1 ;i++){
-                let l = (geometry[i+1][0] - geometry[i][0])**2;
-                let h = (geometry[i+1][1] - geometry[i][1])**2;
-                length_polyline += Math.sqrt(l+h);
-            }
+            // longueur en unité de mesure de la liste de points
+            let line_length = apiProperties.lineLength(line_edge_list);
 
-            console.log(geometry);
 
-            // interpolation
-            // let coef_dir = (geometry[1][1]-geometry[0][1]) / (geometry[1][0]-geometry[0][0]);
-            // let b = geometry[1][1] - coef_dir * geometry[1][0];
-
-            // let new_list_geom = apiProperties.pointsPolyline(geometry[0],geometry[1],4);
-            let new_list_point = interpolation.liste_point(geometry[0][0],geometry[0][1],geometry[1][0],geometry[1][1],6);
-
-            console.log(new_list_point);
+            //nouvelle liste de points créant de nouveaux points à l'intérieur de la ligne où calculer la pente
+            let new_list_point = interpolation.liste_point(line_edge_list[0][0],line_edge_list[0][1],line_edge_list[1][0],line_edge_list[1][1],6);
+            let calcul_point_list = interpolation.liste_point(line_edge_list[0][0],line_edge_list[0][1],line_edge_list[1][0],line_edge_list[1][1],6);
             
+            // points des extrémités
+            // nombre de points
+            let line_edge_list_length = line_edge_list.length
 
-            var properties = {
-                "algoritm" : algo,
-                "unit" : unite,
-                "projection" : req.query.proj
-            };
+            //initialisation de la liste des altitudes
+            let line_edge_list_alti = [];
 
-            // on donne la liste des pentes et des orientations calculées
-            let liste_pts_pente = [];
-            let lst_pente = [];
-            let lst_orien = [];
+            //initialisation de la liste des pentes
+            let line_edge_list_slope = [];
+
+            //initialisation de la liste des orientations
+            let line_edge_list_aspect = [];
+
+            //points ou le calcul des pente a été effectué (les points dont l'alti est connu le plus proche du point renseigné)
+            let line_edge_list_z_points = [];
+
+            //matrices de calcul avec alti
+            let line_edge_list_matrix_alti = [];
+
+            //matrice de calcul avec coordonnées
+            let line_edge_list_matrix_coord = [];
+
+            //point de la ligne
+            //nombre de points
+            let calcul_point_list_length = calcul_point_list.length
+
+            //initialisation de la liste des altitudes
+            let calcul_point_list_alti = [];
+
+            //initialisation de la liste des pentes
+            let calcul_point_list_slope = [];
+
+            //initialisation de la liste des orientations
+            let calcul_point_list_aspect = [];
+
+            //points ou le calcul des pente a été effectué (les points dont l'alti est connu le plus proche du point renseigné)
+            let calcul_point_list_z_points = [];
+
+            //matrices de calcul avec alti
+            let calcul_point_list_matrix_alti = [];
+
+            //matrice de calcul avec coordonnées
+            let calcul_point_list_matrix_coord = [];
 
             try {
-
-                for(let i = 0 ; i < new_list_geom.length ; i++){
-                    let filePath = search_coord.coordToindice(new_list_geom[i][0], new_list_geom[i][1], "8", "tif");
-                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
-                    console.log(filePath);
-                    
-                }
                 // récupère la dalle à partir des coordonnées insérées dans l'url
+                console.log(line_edge_list);
+
+                //points des extrtémités 
+                for(let i = 0 ; i < line_edge_list.length ; i++){
+                    //on récupère les coordonnée
+                    let i_lon = line_edge_list[i][0];
+                    let i_lat =  line_edge_list[i][1];
+
+                    //on indique quelle dalle utilisée à partir des coordonnées ainsi que le répertoire de rangement
+                    let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
+                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+
+                    //numero de la tuile ou récupérer la valeur de pente est récupéré
+                    let numTuile = search_coord.numTuile(i_lon, i_lat);
+                    //lecture de la tuile et récupération du buffer contenant les valeurs alti
+                    let buffer = await fileRead.readTile(filePath,numTuile);
+                    //matrice des indice des points de la ligne
+                    let matrixIndice = apiProperties.coordToPointMatrix(i_lon, i_lat);
+                    //matrice des alti des points de la ligne
+                    let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
+                    
+                    //récupération des valeurs de la matrice
+                    line_edge_list_matrix_alti.push(matrixAlti);
+                    //altitude des points
+                    line_edge_list_alti.push(matrixAlti[4]);
+
+                    //coordonnées ou l'altitude est calculée (point dont l'altitude est connue le plus proche du point renseigné par l'utilisateur)
+                    let calculate_geometry = search_coord.indiceCoord(i_lon,i_lat)['coord_point'];
+
+                    //création de la matrice de coordonnées où la pente a été calculée
+                    let calculate_geometry_matrix = apiProperties.coordinateMatrix(i_lon,i_lat);                    
+
+                    //reconversion des coordonnées en WGS83 pour l'affichage
+                    if(proj == "4326"){
+                        calculate_geometry = L93_to_WGS84.transform(calculate_geometry[0],calculate_geometry[1]);
+                        for(let j = 0 ; j < calculate_geometry_matrix.length ; j++){
+                            let lon = calculate_geometry_matrix[j][0];
+                            let lat = calculate_geometry_matrix[j][1];
+                            calculate_geometry_matrix[j] = L93_to_WGS84.transform(lon,lat);
+                        }
+
+                    } else{
+                    }
+
+                    //insersion des résultats dans le json
+                    line_edge_list_z_points.push(calculate_geometry);
+                    line_edge_list_matrix_coord.push(calculate_geometry_matrix);
+
+
+                    //algoritmes de pente
+                    if (algo == 'Zevenbergen and Thorne') {
+                        line_edge_list_slope.push(algoZAT.compute(matrixAlti,1)['slope']);
+                        line_edge_list_aspect.push(algoZAT.compute(matrixAlti,1)['aspect']);
+                    }
+                    else if (algo == 'Horn'){
+                        line_edge_list_slope.push(algoHorn.compute(matrixAlti,1)['slope']);
+                        line_edge_list_aspect.push(algoHorn.compute(matrixAlti,1)['aspect']);
+                    }
+
+                    // conversion degré pourcent
+                    if(unite == 'prc'){
+                        line_edge_list_slope[i] = line_edge_list_slope[i] * 100 / 45;
+                    }
+                }
+
+                //points de la ligne
+                for(let i = 0 ; i < calcul_point_list.length ; i++){
+                    let i_lon = calcul_point_list[i][0];
+                    let i_lat =  calcul_point_list[i][1];
+
+                    //on indique quelle dalle utilisée à partir des coordonnées ainsi que le répertoire de rangement
+                    let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
+                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                    // numero de la tuile ou récupérer la valeur de pente
+                    let numTuile = search_coord.numTuile(i_lon, i_lat);
+
+
+                    //lecture de la tuile et récupération du buffer contenant les valeurs alti
+                    let buffer = await fileRead.readTile(filePath,numTuile);
+                    //matrice des indice des points de la ligne
+                    let matrixIndice = apiProperties.coordToPointMatrix(i_lon, i_lat);
+                    //matrice des alti des points de la ligne
+                    let matrixAlti = apiProperties.indiceToAlti(matrixIndice,buffer);
+
+                    //récupération des valeurs de la matrice
+                    calcul_point_list_matrix_alti.push(matrixAlti);
+                    //altitude des points
+                    calcul_point_list_alti.push(matrixAlti[4]);
+                    
+                    //coordonnées ou l'altitude est calculée (point dont l'altitude est connue le plus proche du point renseigné par l'utilisateur)
+                    let calculate_geometry = search_coord.indiceCoord(i_lon,i_lat)['coord_point'];
+                    //création de la matrice de coordonnées où la pente a été calculée
+                    let calculate_geometry_matrix = apiProperties.coordinateMatrix(i_lon,i_lat);
+
+                    //reconversion des coordonnées en WGS83 pour l'affichage
+                    if(proj == "4326"){
+                        calculate_geometry = L93_to_WGS84.transform(calculate_geometry[0],calculate_geometry[1]);
+                        for(let j = 0 ; j < calculate_geometry_matrix.length ; j++){
+                            let lon = calculate_geometry_matrix[j][0];
+                            let lat = calculate_geometry_matrix[j][1];
+                            calculate_geometry_matrix[j] = L93_to_WGS84.transform(lon,lat);
+                        }
+                    } else{
+                    }
+
+                    //insersion des résultats dans le json
+                    calcul_point_list_z_points.push(calculate_geometry);
+                    calcul_point_list_matrix_coord.push(calculate_geometry_matrix);
+
+                    //algoritmes de pente
+                    if (algo == 'Zevenbergen and Thorne') {
+                        calcul_point_list_slope.push(algoZAT.compute(matrixAlti,1)['slope']);
+                        calcul_point_list_aspect.push(algoZAT.compute(matrixAlti,1)['aspect']);
+                    }
+                    else if (algo == 'Horn'){
+                        calcul_point_list_slope.push(algoHorn.compute(matrixAlti,1)['slope']);
+                        calcul_point_list_aspect.push(algoHorn.compute(matrixAlti,1)['aspect']);
+                    }
+
+                    // conversion degré pourcent
+                    if(unite == 'prc'){
+                        calcul_point_list_slope[i] = calcul_point_list_slope[i] * 100 / 45;
+                    }
+
+                }
+
+                //retour des coordonnées des points dans la ligne aux coordonnées d'origine
+                let calcul_point_list_origin_coord = calcul_point_list.slice();
+                if(proj == "4326"){
+                    for(let j = 0 ; j < calcul_point_list_origin_coord.length ; j++){
+                        let lon = calcul_point_list_origin_coord[j][0];
+                        let lat = calcul_point_list_origin_coord[j][1];
+                        calcul_point_list_origin_coord[j] = L93_to_WGS84.transform(lon,lat);
+                    }
+                } else{
+                }
+                
+                res.json({
+                    message : "On génère un json avec les paramètres de la lineString",
+                    "properties":{
+                        "algoritm" : algo,
+                        "unit" : unite,
+                        "projection" : proj
+                    },
+
+                    method:req.method,
+                    // attributs géométriques
+                    "geometry":{
+                        "line_length":line_length, // longueur de la polyligne en unité de mesure métrique
+                        "number_of_line":line_edge_list_length - 1, // nombre de lignes
+                        // travail sur les points des lignes
+                        "line_points":{ //points de l'intérieur de la ligne
+                            "number_of_point":calcul_point_list_length,
+                            "inner_points":calcul_point_list_origin_coord,
+                            "calculation_points":calcul_point_list_z_points, //points extraits de la ligne,
+                            "topography":{ // informations topographique des points
+                                "altitude":calcul_point_list_alti, // altitude des points
+                                "slope":calcul_point_list_slope, //pente calculée des points
+                                "aspect":calcul_point_list_aspect //orientation calculée des points
+                            },
+                            "calculation matrix":{
+                                "altitude":calcul_point_list_matrix_alti, //matrice des altitudes qui ont permis de calculer la pente
+                                "coordinates":calcul_point_list_matrix_coord //coordonnées des points de la matrice des altitudes qui ont permis de calculer la pente
+                            }
+                        },
+                        
+                        // travail sur les points des extrémités
+                        "edge_points":{ //points des extrémités
+                            "number_of_point":line_edge_list_length,
+                            "inner_points":line_edge_list_origin_coord, //points rentrés par l'utilisateur
+                            "calculation_points":line_edge_list_z_points, // points dont la pente est calculée
+                            "topography":{ // informations topographique des points
+                                "altitude":line_edge_list_alti, // altitude des points
+                                "slope":line_edge_list_slope, //pente calculée des points
+                                "aspect":line_edge_list_aspect //orientation calculée des points
+                            },
+                            "calculation matrix":{
+                                "altitude":line_edge_list_matrix_alti,
+                                "coordinates":line_edge_list_matrix_coord
+                            }
+                        }
+                    }
+                    // "EXTERIMENTAL":"",
+                    // line_edge_list,//liste de points entrés par l'utilisateur
+                    // "altitude":liste_alti,
+                    // "number of points":line_edge_list.length,
+                    // "polyline length":"",
+                    // "liste_points_slopes":liste_pts_slope,
+                    // "points_on_line" : new_list_point, // points sur la ligne ou la pente est calculée
+                    // "points_on_line_calculate" : liste_pts_slope_calculate,
+                    // "points_matrix_alti_on_calculate_points" : liste_matrix_alti,
+                    // "points_matrix_alti_coordinates_on_calculate_points":liste_pts_matrix_alti
+
+                });
+                
+                
             } catch (error) {
                 console.log(error);
-                
             }
+                // récupère la dalle à partir des coordonnées insérées dans l'url
+            
 
 
             // if (algo == 'Zevenbergen and Thorne') {
@@ -142,15 +359,15 @@ module.exports = {
             // console.log("pente du premier point" + liste_pts_pente[0]['slope']);
             
             
-            res.json({
-                message : "On génère un json avec les paramètres de la lineString",
-                geometry,
-                "number of points":geometry.length,
-                "polyline length":length_polyline,
-                properties,
-                "liste_points_slopes":liste_pts_pente,
-                method:req.method
-            });
+            // res.json({
+            //     message : "On génère un json avec les paramètres de la lineString",
+            //     geometry,
+            //     "number of points":geometry.length,
+            //     "polyline length":length_polyline,
+            //     properties,
+            //     "liste_points_slopes":liste_pts_pente,
+            //     method:req.method
+            // });
 
         });
 
@@ -224,7 +441,6 @@ module.exports = {
 
             //conversion des coordonnées dans la bonne projection
             let coord_l93 = new Array();
-
             if(proj == "4326"){
                 coord_l93 = WGS84_to_L93.transform(U_Longitude,U_Latitude);
                 inLongitude = coord_l93[0];
@@ -266,11 +482,9 @@ module.exports = {
                     for(let i = 0 ; i < calculate_geometry_matrix.length ; i++){
                         let lon = calculate_geometry_matrix[i][0];
                         let lat = calculate_geometry_matrix[i][1];
-                        console.log(lon);
-                        console.log(lat);
-
                         calculate_geometry_matrix[i] = L93_to_WGS84.transform(lon,lat);
                     }
+                    
                 } else{
                 }
                 
@@ -291,26 +505,33 @@ module.exports = {
 
             res.json({
                 //coordonnée du point choisi
-                "geometry_input":{
-                    "latitude":U_Latitude,
-                    "longitude":U_Longitude
-                },
-
-                "geometry_calculate":{
-                    "latitude":calculate_geometry[1],
-                    "longitude":calculate_geometry[0]
-                },
-
-                "altitude" : matrixAlti[4],
-                //ajout coordonnée point final
+                "message":"Calcul de pente d'un point",
                 "properties":{
                     "algoritm" : algo,
                     "unit" : unite,
                     "projection" : proj
                 },
+
+                "geometry_input":{
+                    "latitude":U_Latitude,
+                    "longitude":U_Longitude
+                },
+
+                "altitude" : matrixAlti[4],
+                //ajout coordonnée point final
+
                 "slope" : slope,
                 "aspect" : aspect,
+
+                //coordonnée du point ou la pente est calculée (le plus proche du point choisi)
+                "geometry_calculate":{
+                    "latitude":calculate_geometry[1],
+                    "longitude":calculate_geometry[0]
+                },
+
+                //matrice des 8 altitude autout du points qui ont servi à calculer la pente
                 "matrix_calculate":matrixAlti,
+
                 "matrix_calculate_geometry":calculate_geometry_matrix
             });
 

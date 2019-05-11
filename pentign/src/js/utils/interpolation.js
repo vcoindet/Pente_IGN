@@ -58,17 +58,23 @@ function liste_point(x1, y1, x2, y2, nb_point){
 	let new_y;
 	let xmin;
 	let xmax;
+	let ymin;
+	let ymax;
 	
 	if(x1 < x2){
 		xmin = x1;
 		xmax = x2;
+		ymin = y1;
+		ymax = y2;
 	}
 	else{
 		xmin = x2;
 		xmax = x1;
+		ymin = y2;
+		ymax = y1;
 	}
 	
-	liste_point.push(xmin);
+	liste_point.push([xmin, ymin]);
 
 	for(let i = pas; i < diff;i =  i + pas){
 		new_x = xmin + i;
@@ -76,7 +82,7 @@ function liste_point(x1, y1, x2, y2, nb_point){
 		liste_point.push([new_x, new_y]);
 	}
 
-	liste_point.push(xmax);
+	liste_point.push([xmax, ymax]);
 
 	return liste_point;
 }

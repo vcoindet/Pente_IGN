@@ -52,7 +52,7 @@ function liste_point(x1, y1, x2, y2, nb_point){
 	let ord_orig = equation[1];
 	
 	let diff = Math.abs(x2 - x1);
-	let pas = Math.floor(diff / nb_point);
+	let pas = diff / nb_point;
 	
 	let liste_point = [];
 	let new_x;
@@ -78,7 +78,6 @@ function liste_point(x1, y1, x2, y2, nb_point){
 	liste_point.push([xmin, ymin]);
 
 	for(let i = pas; i < diff; i = i + pas){
-		console.log(i);
 		new_x = xmin + i;
 		new_y = interpollation_y(x1, y1, x2, y2, new_x);
 		liste_point.push([new_x, new_y]);
@@ -91,6 +90,6 @@ function liste_point(x1, y1, x2, y2, nb_point){
 
 
 
-console.log(liste_point(1,1,10,10,4));
+console.log(liste_point(1,1,10,10,15));
 
 

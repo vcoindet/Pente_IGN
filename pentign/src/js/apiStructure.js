@@ -1,12 +1,9 @@
 
 const express = require('express');
 const cors = require('cors'); //util pour les autorisation
-
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
 const algoHorn = require('./penteModule/algoHorn.js');
-var GeoTIFF = require('geotiff');
-var fs = require('fs');
 // var mnt_simul = require('./mnt_simul.js');
 var search_coord = require('./search_coord.js');
 var fileRead = require('./fileread.js');
@@ -275,7 +272,7 @@ module.exports = {
                 }
                 
                 res.json({
-                    message : "On génère un json avec les paramètres de la lineString",
+                    message : "Calcul des pentes sur une polyligne - PentIGN",
                     "properties":{
                         "algoritm" : algo,
                         "unit" : unite,
@@ -293,12 +290,12 @@ module.exports = {
                             "inner_points":calcul_point_list_origin_coord,
                             "calculation_points":calcul_point_list_z_points, //points extraits de la ligne,
                             "topography":{ // informations topographique des points
-                                "altitude":calcul_point_list_alti, // altitude des points
+                                "elevation":calcul_point_list_alti, // altitude des points
                                 "slope":calcul_point_list_slope, //pente calculée des points
                                 "aspect":calcul_point_list_aspect //orientation calculée des points
                             },
                             "calculation matrix":{
-                                "altitude":calcul_point_list_matrix_alti, //matrice des altitudes qui ont permis de calculer la pente
+                                "elevation":calcul_point_list_matrix_alti, //matrice des altitudes qui ont permis de calculer la pente
                                 "coordinates":calcul_point_list_matrix_coord //coordonnées des points de la matrice des altitudes qui ont permis de calculer la pente
                             }
                         },
@@ -314,7 +311,7 @@ module.exports = {
                                 "aspect":line_edge_list_aspect //orientation calculée des points
                             },
                             "calculation matrix":{
-                                "altitude":line_edge_list_matrix_alti,
+                                "elevations":line_edge_list_matrix_alti,
                                 "coordinates":line_edge_list_matrix_coord
                             }
                         }
@@ -516,34 +513,56 @@ module.exports = {
 
             res.json({
                 //coordonnée du point choisi
-                "message":"Calcul de pente d'un point",
+                "message":"Calcul de pente d'un point - PentIGN",
                 "properties":{
-                    "algoritm" : algo,
-                    "unit" : unite,
-                    "projection" : proj
+                    "algoritm" : algo, //algoritme choisi par l'utilisateur (Zevenbergen and Thorne ou Horn),
+                    "unit" : unite, //unité de la pente a renvoyer (degré ou pourcentage),
+                    "projection" : proj //projection des points rentrés par l'utilisateur
                 },
 
-                "geometry_input":{
-                    "latitude":U_Latitude,
-                    "longitude":U_Longitude
-                },
+                "geometry":{  //propriétés géométriques par rapport au points renseigné
+                    "inner_point":[ //point renseigné par l'utilisateur dans la projection d'origine [longitude, latitude]
+                        U_Longitude,
+                        U_Latitude  
+                    ],
 
-                "altitude" : matrixAlti[4],
+                    "calculation_point":[ //point le plus proche du 'inner_point" où l'altitude est définie puis utilisé dans le calcul de pente [longitude, latitude]
+                        calculate_geometry[0],
+                        calculate_geometry[1]
+                    ],
+
+                    "topography":{ //propriétés topographiques trouvées à partir du point:
+                        "elevation":matrixAlti[4], //altitude extraite du MNT
+                        "slope" : slope, //pente calculée affichée selon l'unité choisie (degré ou pourcentage)
+                        "aspect" : aspect, //orientation sur 360° à partir de l'axe x dans le sens inverse des aiguilles d'une montre
+                    },
+
+                    "calculation_matrix":{ //matrices des 8 points autour du point renseigné par l'utilisateur qui ont permis le calcul de pente
+                        "altitudes":matrixAlti, //altitude de ces 8 points
+                        "coordinates":calculate_geometry_matrix //coordonnées de ces 8 points
+                    }
+
+                },
+                // "geometry_input":{
+                //     "latitude":U_Latitude,
+                //     "longitude":U_Longitude
+                // },
+
+                // "altitude" : matrixAlti[4],
                 //ajout coordonnée point final
 
-                "slope" : slope,
-                "aspect" : aspect,
+
 
                 //coordonnée du point ou la pente est calculée (le plus proche du point choisi)
-                "geometry_calculate":{
-                    "latitude":calculate_geometry[1],
-                    "longitude":calculate_geometry[0]
-                },
+                // "geometry_calculate":{
+                //     "latitude":calculate_geometry[1],
+                //     "longitude":calculate_geometry[0]
+                // },
 
                 //matrice des 8 altitude autout du points qui ont servi à calculer la pente
-                "matrix_calculate":matrixAlti,
+                // "matrix_calculate":matrixAlti,
 
-                "matrix_calculate_geometry":calculate_geometry_matrix
+                // "matrix_calculate_geometry":calculate_geometry_matrix
             });
 
             } catch (error) {

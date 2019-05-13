@@ -31,7 +31,7 @@ unit -> string 			Facultatif,
 	"deg" (degré) ou "prc" (pourcentage)
 	Si le paramètre n'est pas inséré, l'unité en degré sera utilisé
 
-proj -> int				Facultatif
+proj -> string				Facultatif
 	code EPSG de la projection des coordonnées géographiques insérées
 	4326 = Pseudo Mercator WGS84
 	2154 = Lambert 93 
@@ -162,6 +162,13 @@ il ressemble à celui di point mais avec les géométrie contitué en deux fois:
 line_points -> les points de toute la polyligne obtenus automatiquement par interpolation
 edge_points -> les points des extrémités des lignes de la polyligne (ceux renseignés par l'utilisateur)
 			ce dernier permet de connaitre la pente sur chaque point renseigné dans la liste
+
+on ajoute un nouveau paramètre des propriétés dans l'url:
+
+precis -> integer	Facultatif
+					Précision qui indique le nombre maximum de points à calculer à l'intérieur de chaque ligne de la polyligne
+					La valeur ne dois pas dépasser 40 pour des raisons de mémoire
+					Par défaut, si le paramètre n'est pas renseigné dans l'url, la valeur sera 10
 			
 nous avons également des attributs en plus par rapport au point:
 	-	line_length -> longueur de la polyligne en mètre

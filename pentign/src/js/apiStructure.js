@@ -79,6 +79,12 @@ module.exports = {
             let unite = apiProperties.valProperties(req.query.unit,'prc','deg');
             let algo = apiProperties.valProperties(req.query.algo,'Horn','Zevenbergen and Thorne');    
             let proj = apiProperties.valProperties(req.query.proj,'2154','4326');
+            let precision = apiProperties.valProperties(req.query.precis,parseInt(req.query.precis),10)
+
+            //la précision ne dois pas dépasser 40 pour des raisons de mémoire
+            if(precision > 40){
+                res.send("erreur: la précision de dois pas dépasser 40");
+            }
 
             // projection originale gardée en copie si changement de projection
             let line_edge_list_origin_coord = line_edge_list.slice();
@@ -101,7 +107,8 @@ module.exports = {
 
             //calcul des coordonnées des points à l'interieur des lignes par interpolation
             for(let i = 0 ; i < line_edge_list.length - 1 ; i++){
-                ligne_interpol.push(interpolation.liste_point(line_edge_list[i][0],line_edge_list[i][1],line_edge_list[i+1][0],line_edge_list[i+1][1],6));
+                //interpolation pour trouver un maximum les points d'altitude entre les deux points, le nombre de points est défini selon la précision choisie par l'utilisateur en entrée (nombre de points entre les extrémités des lignes)
+                ligne_interpol.push(interpolation.liste_point(line_edge_list[i][0],line_edge_list[i][1],line_edge_list[i+1][0],line_edge_list[i+1][1],precision));
             }
 
             //on extrait les résultats : on transforme les listes de liste de point en une liste de points simple
@@ -156,19 +163,16 @@ module.exports = {
             let calcul_point_list_matrix_coord = [];
 
             try {
-                // récupère la dalle à partir des coordonnées insérées dans l'url
-                console.log(line_edge_list);
 
                 //points des extrtémités 
+
                 for(let i = 0 ; i < line_edge_list.length ; i++){
-                    //on récupère les coordonnée
+                    //on lit les coordonnées de latitude et de longitude de chaque
                     let i_lon = line_edge_list[i][0];
                     let i_lat =  line_edge_list[i][1];
 
-                    //on indique quelle dalle utilisée à partir des coordonnées ainsi que le répertoire de rangement
+                    //on indique quelle dalle utilisée à partir des coordonnées renseignées dans l'url ainsi que le répertoire de rangement
                     let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
-                    console.log(chemin_mnt);
-                    
                     filePath = chemin_mnt + filePath;
 
                     //numero de la tuile ou récupérer la valeur de pente est récupéré
@@ -225,6 +229,7 @@ module.exports = {
                 }
 
                 // #################### points de la ligne ####################
+                //on lit les coordonnées de latitude et de longitude de chaque points
                 for(let i = 0 ; i < calcul_point_list.length ; i++){
                     let i_lon = calcul_point_list[i][0];
                     let i_lat =  calcul_point_list[i][1];
@@ -296,12 +301,19 @@ module.exports = {
                 } else{
                 }
                 
+                if(unite == 'prc'){
+                    unite = "pourcentage";
+                }else{
+                    unite = "degre";
+                }
+                
                 res.json({
                     message : "Calcul des pentes sur une polyligne - PentIGN",
                     "properties":{
                         "algoritm" : algo,
                         "unit" : unite,
-                        "projection" : proj
+                        "projection" : proj,
+                        "precision":precision //précision choisie par l'utilisateur
                     },
 
                     method:req.method,
@@ -320,7 +332,7 @@ module.exports = {
                                 "aspect":calcul_point_list_aspect //orientation calculée des points
                             },
                             "calculation matrix":{
-                                "elevation":calcul_point_list_matrix_alti, //matrice des altitudes qui ont permis de calculer la pente
+                                "elevations":calcul_point_list_matrix_alti, //matrice des altitudes qui ont permis de calculer la pente
                                 "coordinates":calcul_point_list_matrix_coord //coordonnées des points de la matrice des altitudes qui ont permis de calculer la pente
                             }
                         },
@@ -331,7 +343,7 @@ module.exports = {
                             "inner_points":line_edge_list_origin_coord, //points rentrés par l'utilisateur
                             "calculation_points":line_edge_list_z_points, // points dont la pente est calculée
                             "topography":{ // informations topographique des points
-                                "altitude":line_edge_list_alti, // altitude des points
+                                "elevation":line_edge_list_alti, // altitude des points
                                 "slope":line_edge_list_slope, //pente calculée des points
                                 "aspect":line_edge_list_aspect //orientation calculée des points
                             },
@@ -345,7 +357,6 @@ module.exports = {
                 
                 
             } catch (error) {
-                console.log(error); // renvoie un message d'erreur
                 res.send(error); // renvoie un message d'erreur
             }
           
@@ -405,8 +416,6 @@ module.exports = {
                 //coordonnées ou l'altitude est calculée (point le plus proche du point renseigné)
                 let calculate_geometry = search_coord.indiceCoord(inLongitude,inLatitude)['coord_point'];
 
-                console.log(calculate_geometry);
-
                 //création de la matrice de coordonnées où la pente a été calculée
                 let calculate_geometry_matrix = apiProperties.coordinateMatrix(inLongitude,inLatitude);
                 
@@ -433,9 +442,12 @@ module.exports = {
                 aspect = algoHorn.compute(matrixAlti,1)['aspect'];
             }
 
-            // conversion degré pourcent
+            // conversion degré pourcent + nom complet du paramètre
             if(unite == 'prc'){
                 slope = slope * 100 / 45;
+                unite = "pourcentage"
+            }else{
+                unite = "degre"
             }
 
             res.json({
@@ -465,7 +477,7 @@ module.exports = {
                     },
 
                     "calculation_matrix":{ //matrices des 8 points autour du point renseigné par l'utilisateur qui ont permis le calcul de pente
-                        "altitudes":matrixAlti, //altitude de ces 8 points
+                        "elevations":matrixAlti, //altitude de ces 8 points
                         "coordinates":calculate_geometry_matrix //coordonnées de ces 8 points
                     }
 
@@ -526,11 +538,24 @@ module.exports = {
                 properties
             })
         })
-        
-        .get('/bunding', function(){
-			//bunding?coord='1,2|3,4|5,6|7,8'
 
-			let liste_point = req.query.coord;
+        // ############################################# BOUNDING ##############################################
+        
+        .get('/bounding', function(req,res){
+            //exemple : bunding?coord='1,2|3,4'
+            
+            //l'insersion de coordonnées est obligatoire
+            if(req.query.geom == undefined ){
+                res.send("erreur: insérer des coordonnées valides de latitude et longitude (exemple : geom=6.5044,45.9|6.505,45.9003)");
+            }
+
+            //la polyligne doit comporter au moins deux points
+            if(req.query.geom.length <= 1){
+                res.send("erreur: rentrer 2 points d'extrémités");
+            }
+
+            //
+			let liste_point = req.query.geom;
 
 			liste_point = liste_point.split("|");
 
@@ -540,8 +565,16 @@ module.exports = {
 				liste_point[i][1] = parseFloat(liste_point[i][1], 10);
 			}
 
-			//liste_point = [[1,2], [3, 3]]
+            //les coins de la bounding box
+            let bunding_corner = [
+                liste_point[0],
+                [liste_point[0][0],liste_point[1][0]],
+                liste_point[1],
+                [liste_point[1][1],liste_point[0][1]]
+            ];
 
+            // console.log(bunding_corner);
+            
 			/*
 			function coordStringToInt(coord){
 				let coordInt = coord.split(",");
@@ -579,9 +612,14 @@ module.exports = {
 					bonding_box.push([])
 					bonding_box[i][j] = [x1 + j, y1 + i];
 				}
-			}
+            }
+            res.json({
+                "message":"bounding box contenant les valeur de pente sur une surface",
+                "method":req.method
+            });
 		});
           
+        //ecoute dans le port de la configuration
         app.listen(port, function () {
             console.log('Listening on port ' + port.toString() +'!');
             });

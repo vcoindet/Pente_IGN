@@ -16,7 +16,7 @@ var LOGGER;
 *
 * @function
 * @name start
-* @description Fonction principale
+* @description Fonction principale pour démarer le serveur
 *
 */
 

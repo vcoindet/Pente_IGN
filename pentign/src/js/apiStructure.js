@@ -3,10 +3,8 @@ const express = require('express');
 const cors = require('cors'); //util pour les autorisation
 const nconf = require('nconf');
 
-// const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
 const algoHorn = require('./penteModule/algoHorn.js');
-// var mnt_simul = require('./mnt_simul.js');
 var search_coord = require('./search_coord.js');
 var fileRead = require('./fileread.js');
 var apiProperties = require('./utils/apiProperties.js');
@@ -14,11 +12,8 @@ var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
 var L93_to_WGS84 = require('./utils/L93_to_WGS84');
 var interpolation = require('./utils/interpolation.js');
 
-
-//chemin du mnt
+//chemin de la pyramide
 const chemin_mnt = nconf.get("chemin_mnt");
-
-
 
 module.exports = {
 
@@ -116,7 +111,7 @@ module.exports = {
                 }
             }
             
-            // points des extrémités
+            // #################### points des extrémités ####################
             // nombre de points
             let line_edge_list_length = line_edge_list.length;
 
@@ -229,7 +224,7 @@ module.exports = {
                     }
                 }
 
-                //points de la ligne
+                // #################### points de la ligne ####################
                 for(let i = 0 ; i < calcul_point_list.length ; i++){
                     let i_lon = calcul_point_list[i][0];
                     let i_lat =  calcul_point_list[i][1];
@@ -351,13 +346,10 @@ module.exports = {
                 
             } catch (error) {
                 console.log(error); // renvoie un message d'erreur
-                res.send(error);
+                res.send(error); // renvoie un message d'erreur
             }
           
         });
-
-
-
 
         // ################################ POINT ############################################
 
@@ -431,7 +423,7 @@ module.exports = {
                 } else{
                 }
                 
-                //algoritmes de pente
+            //algoritmes de pente
             if (algo == 'Zevenbergen and Thorne') {
                 slope = algoZAT.compute(matrixAlti,1)['slope'];
                 aspect = algoZAT.compute(matrixAlti,1)['aspect'];
@@ -455,7 +447,7 @@ module.exports = {
                     "projection" : proj //projection des points rentrés par l'utilisateur
                 },
 
-                "geometry":{  //propriétés géométriques par rapport au points renseigné
+                "geometry":{ //propriétés géométriques par rapport au points renseigné
                     "inner_point":[ //point renseigné par l'utilisateur dans la projection d'origine [longitude, latitude]
                         U_Longitude,
                         U_Latitude  
@@ -478,30 +470,11 @@ module.exports = {
                     }
 
                 },
-                // "geometry_input":{
-                //     "latitude":U_Latitude,
-                //     "longitude":U_Longitude
-                // },
 
-                // "altitude" : matrixAlti[4],
-                //ajout coordonnée point final
-
-
-
-                //coordonnée du point ou la pente est calculée (le plus proche du point choisi)
-                // "geometry_calculate":{
-                //     "latitude":calculate_geometry[1],
-                //     "longitude":calculate_geometry[0]
-                // },
-
-                //matrice des 8 altitude autout du points qui ont servi à calculer la pente
-                // "matrix_calculate":matrixAlti,
-
-                // "matrix_calculate_geometry":calculate_geometry_matrix
             });
 
             } catch (error) {
-                console.log(error);
+                // console.log(error);
                 res.send('error');
             }
             
@@ -614,38 +587,3 @@ module.exports = {
             });
     }
 }
-
-// let app = express();
-// const conversion = require ('./conversion/Convert_Lambert_Modul.js');
-
-// app.get('/', function (req, res) {
-//   let x = req.query.x;
-//   let y = req.query.y;
-//   let pente = penteModule.Horn_algo(mat,taille_pixel);// données en entrées à modifier
-//   let orient = penteModule.Zar_algo(image); // données en entrées à modifier
-//   res.json({
-//     "pente":pente,
-//     "orientation":orient
-//   });
-// });
-// app.get('/conversion', function (req, res) {
-//   let latitude = req.query.latitude;
-//   let longitude = req.query.longitude;
-//   let result = conversion.PM_to_Lambert(latitude,longitude);
-//   res.json(result); 
-    
-
-// });
-// app.get('/conversion', function (req, res) {
-//   let x = req.query.x;
-//   let y = req.query.y;
-//   let result2 = conversion.Lambert_to_pm(x,y);
-//   res.json(result2); 
-    
-
-// });
-
-// app.listen(8080, function () {
-//     console.log('Example app listening on port 8080!');
-//   });
-// >>>>>>> b0952c70073ec1a7e1b638ece036073f3cbefdaa

@@ -14,6 +14,15 @@ var zlib = require('zlib');
 */
 module.exports = {
 
+    /**
+     * @function
+     * @name readTile
+     * @description recherche dans un mnt de 4096 x 4096, une tuile de 256 x 256 récupérée selon la coordonnée en entrée
+     * @param {String} filePath répertoire de rangement du mnt
+     * @param {int} tileIndice indice de la tuile
+     * @returns {Buffer} Tuile de valeurs alti sous forme de buffer (taille 256 x 256 x 4)  
+     */
+
     readTile : function (filePath,tileIndice) {
 
         // ouverture et lecture du fichier renseigné
@@ -38,12 +47,11 @@ module.exports = {
         fs.readSync(fd,buffer,0,4,tileByteCount);
         var taille_tuile = buffer.readInt32LE(0);
 
-        // buffer qui va stocker la taille de la tuile
+        //buffer qui va stocker la taille de la tuile
         var buffer3 = new Buffer.alloc(256*256*4);
 
-        // lecture de la tuile
+        //lecture de la tuile
         fs.readSync(fd,buffer3,0,taille_tuile,pos_tuile);
-
 
         //décompression et obtention des valeurs z
         return new Promise ( (resolve, reject) => {
@@ -53,13 +61,9 @@ module.exports = {
                 }else{
                     resolve(buffer);
                 }
-                // let i = 0;
-                // while (i <= buffer.length-4) {
-                //     var alti = buffer.readFloatLE(i);
-                //     // console.log("i: "+i + " alti: "+alti);
-                //     i=i+4;
-                // }
+
             });
+
         });
         
     

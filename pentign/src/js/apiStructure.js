@@ -1,6 +1,7 @@
 
 const express = require('express');
 const cors = require('cors'); //util pour les autorisation
+const nconf = require('nconf');
 
 // const penteModule = require('./penteModule/penteModule.js');
 const algoZAT = require('./penteModule/algoZAT.js');
@@ -15,8 +16,11 @@ var WGS84_to_L93 = require('./utils/WGS84_to_L93.js');
 var L93_to_WGS84 = require('./utils/L93_to_WGS84');
 var interpolation = require('./utils/interpolation.js');
 
-var config = require('../config/template.json');
-var chemin_pyr = config["application"]["pyramide"];
+
+//chemin du mnt
+const chemin_mnt = nconf.get("chemin_mnt");
+
+
 
 module.exports = {
 
@@ -30,7 +34,6 @@ module.exports = {
      */
 
     launch : function(){
-
 
         const app = express();// instanciation de l'application express
         app.use(cors());
@@ -147,7 +150,7 @@ module.exports = {
 
                     //on indique quelle dalle utilisée à partir des coordonnées ainsi que le répertoire de rangement
                     let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
-                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                    filePath = chemin_mnt + filePath;
 
                     //numero de la tuile ou récupérer la valeur de pente est récupéré
                     let numTuile = search_coord.numTuile(i_lon, i_lat);
@@ -209,7 +212,7 @@ module.exports = {
 
                     //on indique quelle dalle utilisée à partir des coordonnées ainsi que le répertoire de rangement
                     let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
-                    filePath = "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/" + filePath;
+                    filePath = chemin_mnt + filePath;
                     // numero de la tuile ou récupérer la valeur de pente
                     let numTuile = search_coord.numTuile(i_lon, i_lat);
 
@@ -468,7 +471,7 @@ module.exports = {
             try {
                 // récupère la dalle à partir des coordonnées insérées dans l'url
                 let filePath = search_coord.coordToindice(inLongitude, inLatitude, "8", "tif");
-                filePath = chemin_pyr + filePath;
+                filePath = chemin_mnt + filePath;
 
                 // numero de la tuile ou récupérer la valeur de pente
                 let numTuile = search_coord.numTuile(inLongitude,inLatitude);         
@@ -655,8 +658,9 @@ module.exports = {
 			}
 		});
           
-        app.listen(8080, function () {
-            console.log('Listening on port 8080!');
+        app.listen(nconf.get("port"), function () {
+			console.log(port);
+            console.log('Listening on port ' + nconf.get("port").toString() +'!');
             });
     }
 }

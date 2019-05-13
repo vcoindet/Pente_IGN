@@ -51,7 +51,6 @@ function start() {
 function loadGlobalConfiguration() {
 
   console.log("Lecture de la configuration...");
-
   let file;
   let globalConfiguration;
 
@@ -85,10 +84,24 @@ function loadGlobalConfiguration() {
   }
 
   console.log("Configuration chargee.")
+  
+  console.log("emplacement fichier config : \n=====\n");
+  console.log(nconf.get()["TEMPLATE_CONF_FILE"]);
+  console.log("======\n");
+
+   
+  let chemin_mnt = globalConfiguration["application"]["pyramide"];
+  let port = globalConfiguration["application"]["port"];
+
+  nconf.set('chemin_mnt', chemin_mnt);
+  nconf.set('port', port);
 
   return globalConfiguration;
-
 }
+
+
+
+
 
 /**
 *

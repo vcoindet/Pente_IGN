@@ -4,16 +4,15 @@ const search_coord = require('../search_coord.js');
 
 module.exports = {
 
-//fonction du choix de l'unité et de l'algoritme
-        valProperties: function(valQuery,valeurInseree,valeurDefaut){
-            if(valQuery == valeurInseree){
-                return valeurInseree;
-            }else{
-                return valeurDefaut;
-            }
-        },
-
-        //creation d'une matrice d'indice en fonction de coordonnée
+		/**
+		 * @function
+		 * @name coordToPointMatrix
+		 * @description une matrice d'indice pour la lecture de la tuile est créée en fonction des coordonnées géographiques renseignées
+		 * @param {float} x coordonnée x
+		 * @param {float} y coordonnée y
+		 * @returns {Array([int,int])} matrice d'indice de l'image (position du pixel entre 0 et 256)
+		 */
+		
         coordToPointMatrix : function (x,y) {
 			let matrix = new Array();
 			let X_Y = search_coord.indiceCoord(x,y)["indice_point"];
@@ -36,59 +35,15 @@ module.exports = {
             return matrix;
         },
 
-        //creation d'un json pour un point
-        jsonPoint:function (U_latitude, U_longitude, U_unit, U_algo, U_proj) {
-
-            let geometry = {
-				"latitude": U_latitude,
-				"longitude": U_longitude
-			};
-
-			let unite = valProperties(U_unit,'prc','deg');
-			let algo = valProperties(U_algo,'Horn','Zevenbergen and Thorne');
-			let proj = valProperties(U_proj,'4326','2154');   
-
-			let slope;
-			let aspect;
-			
-			let matrix_indice = coordToPointMatrix(U_latitude, U_longitude);
-
-			//let matrix_altitude = indiceToAlti(point); regarder chaque indice matrix_indice pour avoir une matrice altirude
-
-            //algoritmes de pente
-            // en attente : matrix
-			// if (algo == 'Zevenbergen and Thorne') {
-			// 	slope = algoZAT.compute(matrix,10)['slope'];
-			// 	aspect = algoZAT.compute(matrix,10)['aspect'];
-			// }
-			// else if (algo == 'Horn'){
-			// 	slope = algoHorn.compute(matrix,10)['slope'];
-			// 	aspect = algoHorn.compute(matrix,10)['aspect'];
-			// }
-
-			// obtention des coordonnées images
-			let coord_img = search_coord.indiceCoord(Xparis,Yparis);
-			console.log("coordonnées dans l'image : " + coord_img[0] + ", " + coord_img[1]);
-
-			let properties = {
-				"algoritm" : algo,
-				"unit" : unite,
-				"projection" : proj
-			};
-
-			var outJSON = {
-				"geometry":geometry,
-				"properties":properties,
-				"slope":slope,
-				"aspect":aspect
-				// "matrix":matrix
-            };
-
-            return outJSON;
-            
-        },
-
-		// on passe de l'indice de l'image en altitude récupérée à partir de la tuile lue
+		/**
+		 * @function
+		 * @name indiceToAlti
+		 * @description renvoie une matrice 9 x 9 des valeur de pente pour calculer la pente du point sélectionné, on passe de l'indice de l'image en altitude récupérée à partir de la tuile lue
+		 * @param {Array([int,int])} matrixIndice 9 indices pour récupérer les valeurs de pixel sous forme de matrice 
+		 * @param {Buffer} buffer buffer qui comprend la tuile
+		 * @returns {Array(float)} liste des altitudes de taille 9
+		 * 
+		 */
         indiceToAlti: function(matrixIndice,buffer) {
             let matrix_alti = new Array();
             for(let i = 0 ; i < matrixIndice.length ; i++){
@@ -105,7 +60,7 @@ module.exports = {
 		 * @description revoie les coordonnées des 8 points de la matrice utilisés pour calculer la pente autour d'un point
 		 * @param {float} x - coordonnée x du point
 		 * @param {float} y - coordonnée y du point
-		 * @returns {[float],[float]} liste de coordonnées des points de la matrice
+		 * @returns {Array(float)} liste de coordonnées des points de la matrice
 		 * 
 		 */
 		coordinateMatrix : function (x,y) {
@@ -143,25 +98,21 @@ module.exports = {
 			return length_polyline;
 		},
 
-		//division d'une polyligne en plusieurs points
-		pointsPolyline : function (pt_debut,pt_fin,precision) {
-
-			let new_list_geom = new Array();
-			let nb_point = this.lineLength([pt_debut,pt_fin]) / precision;
-
-			let longueur_x = Math.abs(pt_fin[0] - pt_debut[0]);
-			let longueur_y = Math.abs(pt_fin[1] - pt_debut[1]);
-			
-			let ecart_pt_x = longueur_x / nb_point;
-			let ecart_pt_y = longueur_y / nb_point;
-			
-			for(let i = 0;i < nb_point ;i++){
-                new_list_geom.push([pt_debut[0] + ecart_pt_x * i, pt_debut[1] + ecart_pt_y * i]);
-			}
-			
-			new_list_geom.push([pt_fin[0],pt_fin[1]]);
-
-			return new_list_geom;
-		}
+		/**
+		 * @function
+		 * @name valProperties 
+		 * @description insersion des propriétés de l'API dans l'url
+		 * @param {String} valQuery valeur de requete insérée dans l'url (req.query.nomVariable)
+		 * @param {String} valeurInseree valeur de la requete à renseigner
+		 * @param {String} valeurDefaut valeur par defaut si le paramètre n'est pas renseigné dans l'url
+		 * @returns {String} valeur de paramètre choisi par l'utilisateur en sortie
+		 */
+        valProperties: function(valQuery,valeurInseree,valeurDefaut){
+            if(valQuery == valeurInseree){
+                return valeurInseree;
+            }else{
+                return valeurDefaut;
+            }
+        }		
 
     }

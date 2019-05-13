@@ -1,6 +1,15 @@
 
 
 module.exports = {
+    /**
+     * @function
+     * @name transform
+     * @description transforme des coordonnées WMS84 en coordonnées Lambert 93
+     * @param {float} lon coordonnées de longitude 
+     * @param {float} lat coordonnées de latitude
+     * @returns {[float,float]} coordonnées en Lamber 93
+     */
+    
     transform : function(lon,lat) {
         var a = 6378137; //demi grand axe de l'ellipsoide
         var e = 0.08181919106; //première excentricité de l'ellipsoide

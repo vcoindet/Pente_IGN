@@ -1,28 +1,37 @@
 
-// function zat_algoritm(x,y,z,image){
-
-// }
-// l'algorithme de Zevenbergen and Throne propose un modèle quadratique
-
+/**
+ * @function
+ * @name zat_algoritm
+ * @description utilise l'algoritme de Zevenbergen and Thorne pour calculer la pente et l'orientation d'un point au milieu d'une matrice de pixel 9 x 9
+ * @param {Array(Float)} image matrice de 9 x 9 valeurs de pixel
+ * @param {int} taille_pixel résolution en mètre d'un pixel
+ * @returns {"slope":float,"aspect":float} valeur de pente et d'orientation
+ */
 
 function zat_algoritm(image,taille_pixel){
-    var i = 1
-    var j = 1
+    let i = 1
+    let j = 1
 
-    // var z = image['image'][i][j];
-    var Z2 = image[1];
-    var Z4 = image[3];
-    var Z6 = image[5];
-    var Z8 = image[7];
+    // on a la matrice de la forme:
+    /**
+     * Z1,Z2,Z3
+     * Z4,Z5,Z6
+     * Z7,Z8,Z9
+     */
 
-    var G = (-Z4 + Z6) / (2 * taille_pixel);
-    var H = (Z2 - Z8) / (2 * taille_pixel);
+    let Z2 = image[1];
+    let Z4 = image[3];
+    let Z6 = image[5];
+    let Z8 = image[7];
 
-    var slope = Math.sqrt(G**2 + H**2)
+    let G = (-Z4 + Z6) / (2 * taille_pixel);
+    let H = (Z2 - Z8) / (2 * taille_pixel);
 
-    var slope_angle = Math.atan(slope) * 180 / Math.PI;
+    let slope = Math.sqrt(G**2 + H**2)
+    //pente en degré
+    let slope_angle = Math.atan(slope) * 180 / Math.PI;
     
-    var aspect = Math.atan(H/G) * 180 / Math.PI;
+    let aspect = Math.atan(H/G) * 180 / Math.PI;
 	
 	if(aspect < 0){
 			aspect = 90.0 - aspect;
@@ -32,34 +41,18 @@ function zat_algoritm(image,taille_pixel){
 	}
 	else{
 		aspect = 90.0 - aspect;
-	}
-	
-    return {"slope":slope_angle,
-            "aspect":aspect
-        };
+    }
+    
+	// return [pente, orientation];
+    return {
+        "slope":slope_angle,
+        "aspect":aspect
+    };
+
 }
 
-// var image = {
-//     "image":[
-//         [10,20,25],
-//         [22,23,25],
-//         [20,24,18]
-//     ]
-// };
-
-// var image2 = {
-//     "image":[
-//         [1,45,3],
-//         [30,2,30],
-//         [1,10,3]
-//     ]
-// }
-
-// console.log(image2);
-
-// console.log( "pente:" + zat_algoritm(image2,10)["slope"]);
-
 module.exports = {
+    //export de la fonction de calcul de pente
     compute : function(matrix,pixelSize){
         return zat_algoritm(matrix,pixelSize);
     }

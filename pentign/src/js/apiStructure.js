@@ -28,12 +28,29 @@ module.exports = {
 
     launch : function(){
 
-
         const app = express();// instanciation de l'application express
         app.use(cors());
+
+        app.get('/',function(req,res){
+            res.json({
+                message : "Bienvenue dans l'application PentIGN, Complêtez l'url pour accéder aux fonctionnalités (lire README pour lire les instructions",
+                method : req.method
+            });
+        });
+
         // ################################ POLYLIGNE #####################################
 
         app.get("/polyligne",async function (req,res){
+
+            //l'insersion de coordonnées est obligatoire
+            if(req.query.geom == undefined ){
+                res.send("erreur: insérer des coordonnées valides de latitude et longitude (exemple : geom=6.5044,45.9|6.505,45.9003)");
+            }
+
+            //la polyligne doit comporter au moins deux points
+            if(req.query.geom.length <= 1){
+                res.send("erreur: rentrer au moins 2 points");
+            }
 
             //on récupère la liste de points renseignés par l'utilisateur
             let line_edge_list = req.query.geom.split('|');
@@ -43,13 +60,13 @@ module.exports = {
                 line_edge_list[i][1] = parseFloat(line_edge_list[i][1]);
             }
 
-            if(line_edge_list == undefined ){
-                res.send("erreur: rentrer des coordonnées valides")
-            }
-
-            //la polyligne doit comporter au moins deux points
-            if(line_edge_list.length <= 1){
-                res.send("erreur: rentrer au moins 2 points")
+            //valeurs numériques obligatoires pour chaque coordonnée de la liste de point
+            for (let i = 0; i < line_edge_list.length; i++) {
+                for (let j = 0; j < line_edge_list[i].length; j++) {
+                    if(isNaN(line_edge_list[i][j])){
+                        res.send("erreur, les coordonnées doivent être de forme numérique");
+                    }
+                }
             }
 
             // propriétés
@@ -316,128 +333,33 @@ module.exports = {
                             }
                         }
                     }
-                    // "EXTERIMENTAL":"",
-                    // line_edge_list,//liste de points entrés par l'utilisateur
-                    // "altitude":liste_alti,
-                    // "number of points":line_edge_list.length,
-                    // "polyline length":"",
-                    // "liste_points_slopes":liste_pts_slope,
-                    // "points_on_line" : new_list_point, // points sur la ligne ou la pente est calculée
-                    // "points_on_line_calculate" : liste_pts_slope_calculate,
-                    // "points_matrix_alti_on_calculate_points" : liste_matrix_alti,
-                    // "points_matrix_alti_coordinates_on_calculate_points":liste_pts_matrix_alti
-
                 });
                 
                 
             } catch (error) {
-                console.log(error);
+                console.log(error); // renvoie un message d'erreur
+                res.send(error);
             }
-                // récupère la dalle à partir des coordonnées insérées dans l'url
-            
-
-
-            // if (algo == 'Zevenbergen and Thorne') {
-            //     for(let i = 0; i < length_list; i++){
-            //         lst_pente.push(algoZAT.compute(matrix,10)['slope']);
-            //         lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
-            //         liste_pts_pente['slope'] = algoZAT.compute(matrix,10)['slope'];
-            //         liste_pts_pente['aspect'] = algoZAT.compute(matrix,10)['aspect'];
-
-            //         let json = {
-            //             "slope":algoZAT.compute(matrix,10)['slope'],
-            //             "aspect":algoZAT.compute(matrix,10)['aspect']
-            //         }
-
-            //         liste_pts_pente.push(json);
-
-
-            //     }
-            // }
-            // else if (algo == 'Horn'){
-            //     for(let i = 0; i < length_list; i++){
-            //         lst_pente.push(algoZAT.compute(matrix,10)['slope']);
-            //         lst_orien.push(algoZAT.compute(matrix,10)['aspect']);
-            //     }
-            // }
-
-            // console.log(lst_pente);
-            // console.log(lst_orien);
-            // console.log("nb_point : "+nb_point);
-            // console.log("pente du premier point" + liste_pts_pente[0]['slope']);
-            
-            
-            // res.json({
-            //     message : "On génère un json avec les paramètres de la lineString",
-            //     geometry,
-            //     "number of points":geometry.length,
-            //     "polyline length":length_polyline,
-            //     properties,
-            //     "liste_points_slopes":liste_pts_pente,
-            //     method:req.method
-            // });
-
+          
         });
 
-        // ############################## POLYLIGNE (OLD) #############################
-        // app.get('/polyligne', function (req, res) {
-        //     //query
-        //     let x = parseFloat(req.query.x);
-        //     let y = parseFloat(req.query.y);
 
-        //     let listepoint = req.query.listepoint;
-        //     // let listepoint = req.params.liste;
-        //     let nb_point = req.query.nb_point;
-        //     //let lst_x = [];
-        //     //let lst_y = [];
-            
-        //     let lst_pente = [];
-        //     let lst_orien = [];
-            
-        //     //erreur
-        //     // reconstruit la liste de point
-        //     if(listepoint.length > nb_point){
-		// 		let point_pas = Math.ceil(listepoint / nb_point);//on prend un point tout les x point_pas
-		// 		let new_list_point = [];
-		// 		for(let j = 0; j < listepoint; j + point_pas){
-		// 			new_list_point.push(listepoint[j]);
-		// 		}
-		// 		listepoint = new_list_point;
-		// 	}
-			
-        //     for(let i = 0; i < listepoint.length; i++){
-		// 		//lst_x.push(listepoint[i][0]);
-		// 		//lst_y.push(listepoint[i][1]);
-		// 		lst_pente.push(penteModule.computeSlope(listepoint[i][0],listepoint[i][1]));
-		// 		lst_orien.push(penteModule.computeAspect(listepoint[i][0],listepoint[i][1]));
-		// 	}
-
-        //     let pente = penteModule.computeSlope(x,y);
-        //     let orient = penteModule.computeAspect(x,y);
-        //     for (let i = 0; i < nb_point; i++){
-        //     res[i].json({
-        //           "lat" : x[i],
-        //           "long" : y[i],
-        //           "alti": "",
-        //           "geometry":listepoint
-                  
-        //         });
-		// 	}
-           
-        //   });
-
-        app.get('/',function(req,res){
-            res.json({
-                message : "Bienvenue dans l'application PentIGN, Complêtez l'url pour accéder aux fonctionnalités",
-                method : req.method
-            });
-        });
 
 
         // ################################ POINT ############################################
 
         app.get('/point',async function(req,res){
 
+            //l'insersion de coordonnées est obligatoire
+            if(req.query.lon == undefined || req.query.lat == undefined){
+                res.send("erreur: insérer des coordonnées valides de latitude et longitude (exemple : geom=6.5044,45.9|6.505,45.9003)");
+            }
+
+            //les coordonnées doivent être en valeur numérique
+            if(isNaN(req.query.lon) || isNaN(req.query.lat)){
+                res.send("erreur: insérer des valeurs numériques comme coordonnées");
+            }
+            
             //query
             let U_Longitude = parseFloat(req.query.lon);
             let U_Latitude = parseFloat(req.query.lat);

@@ -1,7 +1,6 @@
  
 
 function Lambert93toWgs84(x,y) {
-
     let b8 = 1 / 298.257222101;
     let b10 = Math.sqrt(2 * b8 - b8 * b8);
     let b16 = 0.7256077650532670;
@@ -22,6 +21,14 @@ function Lambert93toWgs84(x,y) {
 }
 
 module.exports = {
+    /**
+     * @function
+     * @name Lambert93toWgs84
+     * @description transforme des coordonnées rentrées dans la projection Lambert 93 en coordonnées géographiques WGS84
+     * @param {float} x coordonnée x
+     * @param {float} y coordonnée y
+     * @returns {[float,float]} coordonnées géographiques Lambert 93
+     */    
     transform : function (x,y) {
         return Lambert93toWgs84(x,y);
     }

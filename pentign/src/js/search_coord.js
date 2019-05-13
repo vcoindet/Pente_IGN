@@ -111,27 +111,9 @@ function searchIndiceCoord(x, y){
 		Y_phase_final = Y_phase_bg;//coord Y le plus proche
 		J_phase_final = J_tms_bg;
 	}
-	
-	/*
-	console.log(X_phase_final);
-	console.log(Y_phase_final);
-	*/
 
 	let I_phase = I_phase_final % TileW;//indice I du pixel dans la tuile
 	let J_phase = J_phase_final % TileH;//indice J du pixel dans la tuile
-	
-	/*
-	console.log("##########");
-	console.log(X_phase_final);
-	console.log(Y_phase_final);
-	console.log(I_phase);
-	console.log(J_phase);
-	console.log(I_dalle);
-	console.log(J_dalle);
-	console.log(I_phase_final);
-	console.log(J_phase_final);
-	console.log("##########");
-	*/
 	
 	return [I_dalle, J_dalle];
 }
@@ -388,80 +370,13 @@ function coordToindice(x, y, niveau, type){
 	let Xdalle = res[0];
 	let Ydalle = res[1];
 
-	// console.log(Xdalle);
-	// console.log(Ydalle);
-
 	let tmp = convert36(Xdalle, Ydalle);
 
 	let chemin =  createParse(tmp[0], tmp[1], "8", "tif");
 
 	return chemin;
-	/*
-	console.log("chemin loic:" + createParse(tmp[0], tmp[1], "8", "tif"));
-	
-	let dalle = indiceDalle(x, y);
-	let coordTuile = indiceTuile(dalle[0], dalle[1]);
-	let resConvert = convert36(coordTuile[0], coordTuile[1]);
-	
-	Xtuile = resConvert[0];
-	Ytuile = resConvert[1];
-	
-	console.log(Xtuile);
-	console.log(Ytuile);
-	
-	let chemin = createParse(Xtuile, Ytuile, niveau, type);
-	
-	return chemin;
-	*/
+
 }
-
-//var Xparis = 652470.64;
-//var Yparis = 6862036.80;
-
-//àvar Xannecy = 940169.63;
-//var Yannecy = 6538433.65;
-
-//console.log(indiceCoord(Xannecy, Yannecy));
-
-//coord tuile de paris :
-//159
-//1252
-
-//PYRAMIDE/IMAGE/8/01/61/D1.tif   Tuile annecy
-
-//223 247 min max de X
-//1327 1512 min max de Y
-// console.log("coord paris : " + [Xparis, Yparis].toString());
-// console.log(coordToindice(Xannecy, Yannecy, "8", "tif"));
-// //console.log(convert36(225,1350));
-// console.log(indiceCoord(Xparis,Yparis));
-
-/*
-let coordXtuile = 230 * tilesPerWidth; //i tuille
-let coordX = (coordXtuile * (resolution * TileW)) + X0	//x
-
-let coordYtuile = 1400 * tilesPerHeight
-let coordY = -((coordYtuile * (resolution * TileH)) - Y0)
-
-console.log(coordX, coordY);
-*/
-
-
-/*
-let realW = resolution * TileW;//largeur reelle d'une tuile
-let realH = resolution * TileH;//hauteur reelle d'une tuile
-
-let Ituile = Math.floor((x - X0) / realW);//indice I de la tuile dans le tms
-let Jtuile = Math.floor((Y0 - y) / realH);//indice J de la tuile dans le tms
-
-
-jtuile = jdalle * tilesPerHeight
-y = -((jtuile * realH) - YO)
-
-let I_dalle = Math.floor(Ituile / tilesPerWidth);//indice I de la dalle
-let J_dalle = Math.floor(Jtuile / tilesPerHeight)
-*/
-
 
 module.exports = {
 

@@ -1,11 +1,12 @@
 {
   "application": {
-    "name": "",
+    "name": "Pent'IGN",
     "title": "",
-    "description": "",
+    "description": "Service Web de calcul de pente",
     "logs": {
       "configuration": "../config/log4js.json"
     },
-    "pyramide": "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/"
+    "pyramide": "C:/Users/User/Documents/PROJET_MASTER_CALCUL_PENTE/penteign/",
+    "port": 8080
   }
 }

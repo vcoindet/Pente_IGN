@@ -34,6 +34,7 @@ module.exports = {
         //chemin du mnt
         const chemin_mnt = nconf.get("chemin_mnt");
 
+        console.log(chemin_mnt);
         //choix du port
         const port = nconf.get("port");
 
@@ -174,7 +175,8 @@ module.exports = {
                     //on indique quelle dalle utilisée à partir des coordonnées renseignées dans l'url ainsi que le répertoire de rangement
                     let filePath = search_coord.coordToindice(i_lon, i_lat, "8", "tif");
                     filePath = chemin_mnt + filePath;
-
+                    console.log(filePath);
+                    
                     //numero de la tuile ou récupérer la valeur de pente est récupéré
                     let numTuile = search_coord.numTuile(i_lon, i_lat);
                     //lecture de la tuile et récupération du buffer contenant les valeurs alti

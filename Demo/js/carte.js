@@ -226,7 +226,7 @@ function web_service(theMarker, coord, lat, lng){
 	ajax.addEventListener('load',  function () {
 		console.log(ajax.response);
 		res = ajax.response;
-
+res.toFixed(2);
 		theMarker.bindPopup("<p id ='windows_mark'>" + coord + '</p>' + "<p id='altitude'>"+'Altitude = '+ res["altitude"].toString() + "</p>"+"<p id='pente'>" + "Pente = " + res["slope"].toString() + "</p>"+"<p id='orientation'>" + "Orientation = " + res["aspect"].toString() + "</p>").openPopup();
 
 		return res;

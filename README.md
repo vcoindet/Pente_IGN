@@ -1,7 +1,7 @@
-#Service pente_ign
+﻿#Service pente_ign
 Web service de calcul de pente
 IL s'agit d'une API qui renvoie un JSON constitué des coordonnées, de la pente, l'orientation et l'altitude. 
-Renvoie également un matrice d'altitudes et de coordonnées des 8 points autour de celui renseigné
+Renvoie également une matrice d'altitudes et de coordonnées des 8 points autour de celui renseigné
 Ces 8 points sont ceux utilisés par les algorithmes de calcul de pente
 
 #Exemple d'utilisation
@@ -21,10 +21,10 @@ lat  -> float			Latitude	Obligatoire
 lng -> float			Longitude	Obligatoire
 
 algo -> string			Facultatif	
-	Algoritme de calcul utilisé pour calculer la pente et l'oriantationFacultatif
+	Algorithme de calcul utilisé pour calculer la pente et l'orientation Facultatif
 	Au choix : "Horn" ou "Zevenbergen_Thorne"
 	Facultatif, 
-	Si le paramètre n'est pas inséré, l'algoritme de Zevenbergen and Thorne sera utilisé par défaut
+	Si le paramètre n'est pas inséré, l'algorithme de Zevenbergen and Thorne sera utilisé par défaut
 	
 unit -> string 			Facultatif,	
 	unité de la pente
@@ -117,23 +117,23 @@ JSON renvoyé:
 }
 
 properties -> propriétés renseignés par l'utilisateur
-	algoritm -> algoritme choisi par l'utilisateur (Zevenbergen and Thorne ou Horn),
-	unit -> unité de la pente a renvoyer (degré ou pourcentage),
-	projection -> projection des points rentrés par l'utilisateur
+	algoritm -> algorithme choisi par l'utilisateur (Zevenbergen and Thorne ou Horn),
+	unit -> unité de la pente à renvoyer (degré ou pourcentage),
+	projection -> projection des points rentré par l'utilisateur
 	
-geometry -> propriétés géométriques par rapport au points renseigné
+geometry -> propriétés géométriques par rapport aux points renseignés
 	inner_point -> point renseigné par l'utilisateur dans la projection d'origine [longitude, latitude]
-	calculation_point -> point le plus proche du 'inner_point" où l'altitude est définie puis utilisé dans le calcul de pente [longitude, latitude]
+	calculation_point -> point le plus proche du 'inner_point" où l'altitude est définie puis utilisée dans le calcul de pente [longitude, latitude]
 	topography -> propriétés topographiques trouvées à partir du point:
 		elevation -> altitude extraite du MNT
 		slope -> pente calculée affichée selon l'unité choisie (degré ou pourcentage)
 		aspect -> orientation sur 360° à partir de l'axe x dans le sens inverse des aiguilles d'une montre
-	calculation_matrix -> matrices des 8 points autour du point renseigné par l'utilisateur qui ont permis le calcul de pente
+	calculation_matrix -> matrices des 8 points autour du point renseigné par l'utilisateur qui ont permis de calculer la pente
 		altitude -> altitude de ces 8 points
-		coordonaates -> coordonnées de ces 8 points [longitude,latitude]
+		coordonnates -> coordonnées de ces 8 points [longitude,latitude]
 
 #Calcul de pente sur une liste de points (ligne)
-A la place des paramètre lat et lon pour renseigner une latitude et une longitude, l'utilisateur doit renseigner l'attribut "geom" avec une liste de points dont:
+A la place des paramètres lat et lon pour renseigner une latitude et une longitude, l'utilisateur doit renseigner l'attribut "geom" avec une liste de points dont:
  - la latitude et la longitude sont séparés par une virgule ","
  - les différents points sont séparés par un pipe "|"
  
@@ -153,24 +153,24 @@ le principe et le JSON renvoyé est en principe le même que pour le point, deux
 	 - les points calculés automatiquement à l'intérieur des lignes par interpolation
 
 
-l'attribut  "inner_point" et "calculate_point" renvoient une liste de points
-les attributs "calculation_matrix" renvoient les attributs des matrices pour chaque point de la liste
+L'attribut  "inner_point" et "calculate_point" renvoient une liste de points
+Les attributs "calculation_matrix" renvoient les attributs des matrices pour chaque point de la liste
 
-Le JSON renvoyé fait un nombre conqéquent de lignes pour renseigner les attributs de chaque points
-il ressemble à celui di point mais avec les géométrie contitué en deux fois:
+Le JSON renvoyé fait un nombre conséquent de lignes pour renseigner les attributs de chaque point
+il ressemble à celui du point mais avec les géométries contituées en deux fois:
 
 line_points -> les points de toute la polyligne obtenus automatiquement par interpolation
 edge_points -> les points des extrémités des lignes de la polyligne (ceux renseignés par l'utilisateur)
-			ce dernier permet de connaitre la pente sur chaque point renseigné dans la liste
+			ce dernier permet de connaître la pente sur chaque point renseigné dans la liste
 
-on ajoute un nouveau paramètre des propriétés dans l'url:
+On ajoute un nouveau paramètre des propriétés dans l'url:
 
 precis -> integer	Facultatif
 					Précision qui indique le nombre maximum de points à calculer à l'intérieur de chaque ligne de la polyligne
-					La valeur ne dois pas dépasser 40 pour des raisons de mémoire
+					La valeur ne doit pas dépasser 40 pour des raisons de mémoire
 					Par défaut, si le paramètre n'est pas renseigné dans l'url, la valeur sera 10
 			
-nous avons également des attributs en plus par rapport au point:
+Nous avons également des attributs en plus par rapport au point:
 	-	line_length -> longueur de la polyligne en mètre
 	-	number_of_line -> nombre de lignes qui constituent la polyligne
 	-	dans line_points et line_edge:
@@ -179,7 +179,5 @@ nous avons également des attributs en plus par rapport au point:
 dans la partie du paramètre "topography" nous obtenons la liste des altitudes, des pentes et des orientations attribués à chaque point à calculer
 la position d'un élément de chaque liste correspond à la position du point, par exemple, la première pente de la liste "pente" (pente[0]) correspond à celui du premier point de "calculation_point" (calculation_point[0])
 
-#calcul de la pente sur des zones surfaciques
-l'algoritme n'est pas encore complet.
-A venir...
+
 

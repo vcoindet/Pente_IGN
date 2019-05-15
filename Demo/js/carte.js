@@ -11,7 +11,7 @@ window.onload= function() {
 
     
 
-    //Peremet d'afficher la carte Open Street Map 
+    //Permet d'afficher la carte Open Street Map 
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -19,7 +19,7 @@ window.onload= function() {
     }).addTo(mymap);
 
     L.tileLayer(
-            'https://wxs.ign.fr/pratique/geoportail/wms?service=WMS&request=GetTile&version=1.0.0&tilematrixset=PM&tilematrix={z}&tilecol={x}&tilerow={y}&layer=ORTHOIMAGERY.ORTHOPHOTOS&format=image/jpeg&style=normal',
+            'https://wxs.ign.fr/keal590caiyuc4ei9ilrc0qd/geoportail/wms?service=WMS&request=GetTile&version=1.0.0&tilematrixset=PM&tilematrix={z}&tilecol={x}&tilerow={y}&layer=ORTHOIMAGERY.ORTHOPHOTOS&format=image/jpeg&style=normal',
             {
                 minZoom : 0,
                 maxZoom : 18,
@@ -33,7 +33,7 @@ window.onload= function() {
     // Permet de choisir quels couches de données à afficher
     var baseMaps = {
         "Géoportail" : L.tileLayer(
-                'https://wxs.ign.fr/pratique/geoportail/wmts?service=WMTS&request=GetTile&version=1.0.0&tilematrixset=PM&tilematrix={z}&tilecol={x}&tilerow={y}&layer=ORTHOIMAGERY.ORTHOPHOTOS&format=image/jpeg&style=normal',
+                'https://wxs.ign.fr/keal590caiyuc4ei9ilrc0qd/geoportail/wmts?service=WMTS&request=GetTile&version=1.0.0&tilematrixset=PM&tilematrix={z}&tilecol={x}&tilerow={y}&layer=ORTHOIMAGERY.ORTHOPHOTOS&format=image/jpeg&style=normal',
                 {
                     minZoom : 0,
                     maxZoom : 18,
@@ -62,7 +62,11 @@ window.onload= function() {
                 triggerDelay : 500
         } 
     });
-    mymap.addControl(mousePosition);
+		mymap.addControl(mousePosition);
+		
+		var ep = L.geoportalControl.ElevationPath({
+		});
+		mymap.addControl(ep);
     mymap.on('click',function (e){
         chose_geom(e);
     });
@@ -226,8 +230,11 @@ function web_service(theMarker, coord, lat, lng){
 	ajax.addEventListener('load',  function () {
 		console.log(ajax.response);
 		res = ajax.response;
-res.toFixed(2);
-		theMarker.bindPopup("<p id ='windows_mark'>" + coord + '</p>' + "<p id='altitude'>"+'Altitude = '+ res["altitude"].toString() + "</p>"+"<p id='pente'>" + "Pente = " + res["slope"].toString() + "</p>"+"<p id='orientation'>" + "Orientation = " + res["aspect"].toString() + "</p>").openPopup();
+		//console.log(res["geometry"]["topography"]["elevation"]);
+		let elev = res["geometry"]["topography"]["elevation"].toFixed(2).toString();
+		let lati = res["geometry"]["inner_point"]["1"].toString();
+		let longi = res["geometry"]["inner_point"]["0"].toString();
+		theMarker.bindPopup("<p id ='windows_mark'>" +'Latitude = '+ lati + '</p>' + "<p id ='windows_mark'>" +'Longitude = '+ longi + '</p>'+"<p id='altitude'>"+'Altitude = '+ elev + "</p>"+"<p id='pente'>" + "Pente = " + res["geometry"]["topography"]["slope"].toFixed(2).toString() + "</p>"+"<p id='orientation'>" + "Orientation = " + res["geometry"]["topography"]["aspect"].toFixed(2).toString() + "</p>").openPopup();
 
 		return res;
 	});

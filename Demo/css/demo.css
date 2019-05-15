@@ -60,6 +60,26 @@ h3{
 	color: white;
 	
 }
-   
+ #altitude{
+	font-weight: bold;
+	color : brown;
+	font-family: 'Inconsolata', monospace;
+ }  
+ #pente{
+	font-weight: bold;
+	color : brown;
+	font-family: 'Inconsolata', monospace;
+ }
+ #orientation {
+	font-weight: bold;
+	color : brown;
+	font-family: 'Inconsolata', monospace;
+ }
+ #windows_mark{
+	font-weight: bold;
+	color : brown;
+	font-family: 'Inconsolata', monospace;
+ }
+
 
 
